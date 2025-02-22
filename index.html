@@ -99,6 +99,18 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    /* Bouton de désélection du client */
+    #clearClient {
+      margin-top: 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
+    }
+    /* Conteneur pour l'affichage horizontal */
     .table-container {
       overflow-x: auto;
     }
@@ -112,9 +124,9 @@
       padding: 8px;
       text-align: left;
     }
-    /* Mode par défaut (14 colonnes) :
-       Affichées : REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
-       (CSV en-têtes restent : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
+    /* Pour le mode par défaut (14 colonnes) :
+         Affichées : REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
+         (CSV en-têtes restent : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
     */
     #defaultTableContainer table th:nth-child(5),
     #defaultTableContainer table td:nth-child(5) {
@@ -132,10 +144,10 @@
     #defaultTableContainer table td:nth-child(13) {
       width: 15ch;
     }
-    /* Mode CSV Compagnie (8 colonnes) :
-       Affichées : REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, POSTAL, NOTES
-       (CSV en-têtes : NUMERO_REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, CODE_POSTAL, NOTES)
-       Le champ EMPLOI est automatiquement fixé à "Compagnie" et non modifiable.
+    /* Pour le mode CSV Compagnie (8 colonnes) :
+         Affichées : REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, POSTAL, NOTES
+         (CSV en-têtes : NUMERO_REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, CODE_POSTAL, NOTES)
+         Le champ EMPLOI est fixé à "Compagnie" et non modifiable.
     */
     #compagnieTableContainer table th:nth-child(6),
     #compagnieTableContainer table td:nth-child(6) {
@@ -194,11 +206,12 @@
       <h1 class="header-title">Outil TT Alimentation</h1>
     </div>
 
-    <!-- Section de sélection du client (les informations du fichier CSV sont chargées automatiquement) -->
+    <!-- Section de sélection du client -->
     <div class="section" id="clientSelection">
       <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
       <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
       <datalist id="clientList"></datalist>
+      <button type="button" id="clearClient">Désélectionner le client</button>
     </div>
 
     <!-- Conteneur pour la case "CSV Compagnie" (affichée si l'emploi "Compagnie" est proposé) -->
@@ -267,7 +280,7 @@
   </div>
 
   <script>
-    // LOGIN
+    // PAGE DE LOGIN
     document.getElementById("loginButton").addEventListener("click", function() {
       const pwd = document.getElementById("password").value;
       if(pwd === "Alim7420"){
@@ -276,7 +289,7 @@
         setTimeout(() => {
           loginPage.style.display = "none";
           document.getElementById("main-page").style.display = "block";
-          // Charger automatiquement le fichier_client(in).csv
+          // Charger automatiquement le fichier_client(in).csv depuis le serveur
           fetch("fichier_client(in).csv")
             .then(response => response.text())
             .then(text => {
@@ -354,6 +367,12 @@
           selectedClient = null;
         }
       }
+    });
+
+    // Bouton pour désélectionner le client
+    document.getElementById("clearClient").addEventListener("click", function() {
+      document.getElementById("clientInput").value = "";
+      selectedClient = null;
     });
 
     function updateEmploiOptions() {
@@ -579,7 +598,6 @@
       clearAllErrors();
       let csvContent = "";
       let rows = [];
-      // Générer un timestamp basé sur l'heure actuelle
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
       const timestamp = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate()) + "_" +
