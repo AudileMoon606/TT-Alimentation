@@ -2,16 +2,70 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Outil TT Alimentation</title>
+  <title>Outil TT Alimentation - Login</title>
   <style>
+    /* Styles globaux */
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 0;
+      padding: 0;
       background-color: #f7f7f7;
       color: #333;
+    }
+    /* Page de login en plein écran */
+    #login-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+    #login-page.fade-out {
+      opacity: 0;
+    }
+    #login-page .login-container {
+      text-align: center;
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      background-color: #fff;
+    }
+    #login-page img {
+      max-height: 80px;
+      margin-bottom: 20px;
+    }
+    #login-page input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    #login-page button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
+    /* Styles pour l’interface principale */
+    #main-page {
+      display: none;
+      padding: 20px;
       max-width: 1900px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: auto;
     }
     .header-container {
       display: flex;
@@ -38,12 +92,23 @@
       margin-bottom: 5px;
       font-weight: bold;
     }
-    input[type="text"], select, input[type="file"] {
+    input[type="text"], select {
       padding: 6px;
       margin-bottom: 10px;
       box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 4px;
+    }
+    /* Bouton de désélection du client */
+    #clearClient {
+      margin-top: 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
     }
     /* Conteneur pour l'affichage horizontal */
     .table-container {
@@ -60,9 +125,8 @@
       text-align: left;
     }
     /* Pour le mode par défaut (14 colonnes) :
-         Affichées sur le web : 
-         REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
-         (CSV en-têtes restent NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
+         Affichées : REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
+         (CSV en-têtes restent : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
     */
     #defaultTableContainer table th:nth-child(5),
     #defaultTableContainer table td:nth-child(5) {
@@ -112,7 +176,6 @@
     button#addRow {
       background-color: #007BFF;
     }
-    /* Mise en surbrillance en cas d'erreur */
     .error {
       border: 2px solid red !important;
       background-color: #fdd;
@@ -125,106 +188,125 @@
   </style>
 </head>
 <body>
-  <!-- En-tête avec logo -->
-  <div class="header-container">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo" class="header-logo">
-    <h1 class="header-title">Outil TT Alimentation</h1>
+  <!-- Page de login -->
+  <div id="login-page">
+    <div class="login-container">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo">
+      <h2>Bienvenue</h2>
+      <input type="password" id="password" placeholder="Mot de passe">
+      <br>
+      <button id="loginButton">Se connecter</button>
+    </div>
   </div>
 
-  <!-- Section de chargement du fichier client -->
-  <div class="section">
-    <label for="clientCSV">Charger fichier_client(in).csv :</label>
-    <input type="file" id="clientCSV" accept=".csv">
-  </div>
+  <!-- Interface principale -->
+  <div id="main-page">
+    <div class="header-container">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo" class="header-logo">
+      <h1 class="header-title">Outil TT Alimentation</h1>
+    </div>
 
-  <!-- Section de sélection du client -->
-  <div class="section" id="clientSelection" style="display:none;">
-    <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
-    <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
-    <datalist id="clientList"></datalist>
-  </div>
+    <!-- Section de sélection du client -->
+    <div class="section" id="clientSelection">
+      <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
+      <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
+      <datalist id="clientList"></datalist>
+      <button type="button" id="clearClient">Désélectionner le client</button>
+    </div>
 
-  <!-- Conteneur pour la case "CSV Compagnie" (affichée si l'emploi "Compagnie" est proposé) -->
-  <div class="section" id="modeCompagnieContainer">
-    <label>
-      <input type="checkbox" id="modeCompagnie"> CSV Compagnie
-    </label>
-  </div>
+    <!-- Conteneur pour la case "CSV Compagnie" (affichée si l'emploi "Compagnie" est proposé) -->
+    <div class="section" id="modeCompagnieContainer">
+      <label>
+        <input type="checkbox" id="modeCompagnie"> CSV Compagnie
+      </label>
+    </div>
 
-  <!-- Formulaire de saisie -->
-  <div class="section">
-    <form id="data-form">
-      <!-- Tableau par défaut -->
-      <div class="table-container" id="defaultTableContainer">
-        <table>
-          <thead>
-            <tr>
-              <th>REFERENCE</th>
-              <th>NOM</th>
-              <th>PRENOM</th>
-              <th>SEXE</th>
-              <th>ANNÉE</th>
-              <th>MOIS</th>
-              <th>JOUR</th>
-              <th>EMPLOI</th>
-              <th>ADRESSE</th>
-              <th>APP</th>
-              <th>VILLE</th>
-              <th>POSTAL</th>
-              <th>PERMIS</th>
-              <th>NOTES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- 10 lignes initiales générées par JavaScript -->
-          </tbody>
-        </table>
-      </div>
-      <!-- Tableau pour le mode CSV Compagnie -->
-      <div class="table-container" id="compagnieTableContainer" style="display:none;">
-        <table>
-          <thead>
-            <tr>
-              <th>REFERENCE</th>
-              <th>FIRME</th>
-              <th>MATRICULE</th>
-              <th>EMPLOI</th>
-              <th>ADRESSE</th>
-              <th>APP</th>
-              <th>POSTAL</th>
-              <th>NOTES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- 10 lignes initiales générées par JavaScript -->
-          </tbody>
-        </table>
-      </div>
-      <div class="button-container">
-        <button type="button" id="generateCSV">Générer CSV</button>
-        <button type="button" id="addRow">Ajouter ligne</button>
-        <button type="reset" id="resetButton">Effacer tout</button>
-      </div>
-    </form>
+    <!-- Formulaire de saisie -->
+    <div class="section">
+      <form id="data-form">
+        <!-- Tableau par défaut -->
+        <div class="table-container" id="defaultTableContainer">
+          <table>
+            <thead>
+              <tr>
+                <th>REFERENCE</th>
+                <th>NOM</th>
+                <th>PRENOM</th>
+                <th>SEXE</th>
+                <th>ANNÉE</th>
+                <th>MOIS</th>
+                <th>JOUR</th>
+                <th>EMPLOI</th>
+                <th>ADRESSE</th>
+                <th>APP</th>
+                <th>VILLE</th>
+                <th>POSTAL</th>
+                <th>PERMIS</th>
+                <th>NOTES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 10 lignes initiales générées par JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Tableau pour le mode CSV Compagnie -->
+        <div class="table-container" id="compagnieTableContainer" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>REFERENCE</th>
+                <th>FIRME</th>
+                <th>MATRICULE</th>
+                <th>EMPLOI</th>
+                <th>ADRESSE</th>
+                <th>APP</th>
+                <th>POSTAL</th>
+                <th>NOTES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 10 lignes initiales générées par JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="button-container">
+          <button type="button" id="generateCSV">Générer CSV</button>
+          <button type="button" id="addRow">Ajouter ligne</button>
+          <button type="reset" id="resetButton">Effacer tout</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script>
+    // PAGE DE LOGIN
+    document.getElementById("loginButton").addEventListener("click", function() {
+      const pwd = document.getElementById("password").value;
+      if(pwd === "Alim7420"){
+        const loginPage = document.getElementById("login-page");
+        loginPage.classList.add("fade-out");
+        setTimeout(() => {
+          loginPage.style.display = "none";
+          document.getElementById("main-page").style.display = "block";
+          // Charger automatiquement le fichier_client(in).csv depuis le serveur
+          fetch("fichier_client(in).csv")
+            .then(response => response.text())
+            .then(text => {
+              parseClientCSV(text);
+            })
+            .catch(err => console.error("Erreur lors du chargement du CSV client :", err));
+        }, 1000);
+      } else {
+        alert("Mot de passe incorrect.");
+      }
+    });
+
+    // INTERFACE PRINCIPALE
     let clients = {};
     let selectedClient = null;
     let defaultRowCount = 10;
     let compagnieRowCount = 10;
-
-    // Chargement du fichier_client(in).csv en windows-1252
-    document.getElementById('clientCSV').addEventListener('change', function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const content = e.target.result;
-        parseClientCSV(content);
-      };
-      reader.readAsText(file, "windows-1252");
-    });
 
     function parseClientCSV(csvText) {
       const lines = csvText.split(/\r?\n/);
@@ -253,7 +335,6 @@
         clients[clientNum] = { number: clientNum, name: clientName, emplois: emplois };
       }
       populateClientDatalist();
-      document.getElementById("clientSelection").style.display = "block";
     }
 
     function populateClientDatalist() {
@@ -288,6 +369,12 @@
       }
     });
 
+    // Bouton pour désélectionner le client
+    document.getElementById("clearClient").addEventListener("click", function() {
+      document.getElementById("clientInput").value = "";
+      selectedClient = null;
+    });
+
     function updateEmploiOptions() {
       const emploiSelects = document.querySelectorAll("select[name^='row'][name$='_emploi']");
       emploiSelects.forEach(select => {
@@ -312,7 +399,7 @@
       });
     }
 
-    // Gestion du mode CSV Compagnie via la case "CSV Compagnie"
+    // Gestion du mode CSV Compagnie
     document.getElementById("modeCompagnie").addEventListener("change", function() {
       toggleTableMode(this.checked);
     });
@@ -414,7 +501,7 @@
       tbody.innerHTML = rowsHtml;
     }
 
-    // Bouton "Ajouter ligne" : ajoute une nouvelle ligne au tableau actif
+    // Bouton "Ajouter ligne"
     document.getElementById("addRow").addEventListener("click", function() {
       if (document.getElementById("defaultTableContainer").style.display !== "none") {
         addDefaultRow();
@@ -511,7 +598,6 @@
       clearAllErrors();
       let csvContent = "";
       let rows = [];
-      // Générer un timestamp basé sur l'heure actuelle
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
       const timestamp = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate()) + "_" +
@@ -574,7 +660,6 @@
             notes: document.getElementsByName(`row${i}_notes`)[0].value.trim()
           };
           if (Object.values(row).every(val => val === "")) continue;
-          // Validation minimale : NOM, PRENOM, SEXE, DDN (année, mois, jour) et EMPLOI doivent être renseignés (les erreurs se signalent en rouge)
           if (!row.nom) document.getElementsByName(`row${i}_nom`)[0].classList.add("error");
           if (!row.prenom) document.getElementsByName(`row${i}_prenom`)[0].classList.add("error");
           if (!row.sexe) document.getElementsByName(`row${i}_sexe`)[0].classList.add("error");
@@ -641,7 +726,6 @@
     document.getElementById("resetButton").addEventListener("click", function() {
       document.getElementById("data-form").reset();
       clearAllErrors();
-      // Réinitialiser l'affichage des tableaux et des cases
       document.getElementById("compagnieTableContainer").style.display = "none";
       document.getElementById("defaultTableContainer").style.display = "block";
       document.getElementById("modeCompagnie").checked = false;
