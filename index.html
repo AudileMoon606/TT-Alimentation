@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -290,6 +291,7 @@
           loginPage.style.display = "none";
           document.getElementById("main-page").style.display = "block";
           // Charger automatiquement le fichier_client(in).csv depuis le serveur
+          // GitHub sert le fichier en UTF-8, donc on utilise response.text()
           fetch("fichier_client(in).csv")
             .then(response => response.text())
             .then(text => {
@@ -422,7 +424,7 @@
       defaultRowCount = 10;
       const tbody = document.querySelector("#defaultTableContainer tbody");
       let rowsHtml = "";
-      const moisOptions = 
+      const moisOptions = `
         <option value=""></option>
         <option value="01- Janvier">01- Janvier</option>
         <option value="02- Février">02- Février</option>
@@ -435,14 +437,14 @@
         <option value="09- Septembre">09- Septembre</option>
         <option value="10- Octobre">10- Octobre</option>
         <option value="11- Novembre">11- Novembre</option>
-        <option value="12- Décembre">12- Décembre</option>;
+        <option value="12- Décembre">12- Décembre</option>`;
       let jourOptions = '<option value=""></option>';
       for (let d = 1; d <= 31; d++){
         const day = String(d).padStart(2, '0');
-        jourOptions += <option value="${day}">${day}</option>;
+        jourOptions += `<option value="${day}">${day}</option>`;
       }
       for (let i = 0; i < defaultRowCount; i++) {
-        rowsHtml += <tr>
+        rowsHtml += `<tr>
           <td><input type="text" name="row${i}_ref"></td>
           <td><input type="text" name="row${i}_nom"></td>
           <td><input type="text" name="row${i}_prenom"></td>
@@ -476,7 +478,7 @@
           <td><input type="text" name="row${i}_code_postal" style="width: 80px;"></td>
           <td><input type="text" name="row${i}_numero_permis" style="width: 15ch;"></td>
           <td><input type="text" name="row${i}_notes"></td>
-        </tr>;
+        </tr>`;
       }
       tbody.innerHTML = rowsHtml;
     }
@@ -487,7 +489,7 @@
       const tbody = document.querySelector("#compagnieTableContainer tbody");
       let rowsHtml = "";
       for (let i = 0; i < compagnieRowCount; i++) {
-        rowsHtml += <tr>
+        rowsHtml += `<tr>
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
           <td><input type="text" name="comp_row${i}_matricule"></td>
@@ -496,7 +498,7 @@
           <td><input type="text" name="comp_row${i}_app" style="width: 60px;"></td>
           <td><input type="text" name="comp_row${i}_code_postal" style="width: 80px;"></td>
           <td><input type="text" name="comp_row${i}_notes"></td>
-        </tr>;
+        </tr>`;
       }
       tbody.innerHTML = rowsHtml;
     }
@@ -514,7 +516,7 @@
     function addDefaultRow() {
       const tbody = document.querySelector("#defaultTableContainer tbody");
       const i = tbody.rows.length;
-      const moisOptions = 
+      const moisOptions = `
         <option value=""></option>
         <option value="01- Janvier">01- Janvier</option>
         <option value="02- Février">02- Février</option>
@@ -527,13 +529,13 @@
         <option value="09- Septembre">09- Septembre</option>
         <option value="10- Octobre">10- Octobre</option>
         <option value="11- Novembre">11- Novembre</option>
-        <option value="12- Décembre">12- Décembre</option>;
+        <option value="12- Décembre">12- Décembre</option>`;
       let jourOptions = '<option value=""></option>';
       for (let d = 1; d <= 31; d++){
         const day = String(d).padStart(2, '0');
-        jourOptions += <option value="${day}">${day}</option>;
+        jourOptions += `<option value="${day}">${day}</option>`;
       }
-      const newRow = <tr>
+      const newRow = `<tr>
           <td><input type="text" name="row${i}_ref"></td>
           <td><input type="text" name="row${i}_nom"></td>
           <td><input type="text" name="row${i}_prenom"></td>
@@ -567,14 +569,14 @@
           <td><input type="text" name="row${i}_code_postal" style="width: 80px;"></td>
           <td><input type="text" name="row${i}_numero_permis" style="width: 15ch;"></td>
           <td><input type="text" name="row${i}_notes"></td>
-        </tr>;
+        </tr>`;
       tbody.insertAdjacentHTML('beforeend', newRow);
     }
 
     function addCompagnieRow() {
       const tbody = document.querySelector("#compagnieTableContainer tbody");
       const i = tbody.rows.length;
-      const newRow = <tr>
+      const newRow = `<tr>
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
           <td><input type="text" name="comp_row${i}_matricule"></td>
@@ -583,7 +585,7 @@
           <td><input type="text" name="comp_row${i}_app" style="width: 60px;"></td>
           <td><input type="text" name="comp_row${i}_code_postal" style="width: 80px;"></td>
           <td><input type="text" name="comp_row${i}_notes"></td>
-        </tr>;
+        </tr>`;
       tbody.insertAdjacentHTML('beforeend', newRow);
     }
 
@@ -607,14 +609,14 @@
       if (document.getElementById("modeCompagnie").checked) {
         for (let i = 0; i < document.querySelector("#compagnieTableContainer tbody").rows.length; i++) {
           const row = {
-            ref: document.getElementsByName(comp_row${i}_ref)[0].value.trim(),
-            firme: document.getElementsByName(comp_row${i}_firme)[0].value.trim(),
-            matricule: document.getElementsByName(comp_row${i}_matricule)[0].value.trim(),
+            ref: document.getElementsByName(`comp_row${i}_ref`)[0].value.trim(),
+            firme: document.getElementsByName(`comp_row${i}_firme`)[0].value.trim(),
+            matricule: document.getElementsByName(`comp_row${i}_matricule`)[0].value.trim(),
             emploi: "Compagnie",
-            adresse: document.getElementsByName(comp_row${i}_adresse)[0].value.trim(),
-            app: document.getElementsByName(comp_row${i}_app)[0].value.trim(),
-            code_postal: document.getElementsByName(comp_row${i}_code_postal)[0].value.trim(),
-            notes: document.getElementsByName(comp_row${i}_notes)[0].value.trim()
+            adresse: document.getElementsByName(`comp_row${i}_adresse`)[0].value.trim(),
+            app: document.getElementsByName(`comp_row${i}_app`)[0].value.trim(),
+            code_postal: document.getElementsByName(`comp_row${i}_code_postal`)[0].value.trim(),
+            notes: document.getElementsByName(`comp_row${i}_notes`)[0].value.trim()
           };
           if (Object.values(row).every(val => val === "")) continue;
           rows.push(row);
@@ -644,40 +646,39 @@
       else {
         for (let i = 0; i < document.querySelector("#defaultTableContainer tbody").rows.length; i++) {
           const row = {
-            ref: document.getElementsByName(row${i}_ref)[0].value.trim(),
-            nom: document.getElementsByName(row${i}_nom)[0].value.trim(),
-            prenom: document.getElementsByName(row${i}_prenom)[0].value.trim(),
-            sexe: document.getElementsByName(row${i}_sexe)[0].value.trim(),
-            annee: document.getElementsByName(row${i}_annee)[0].value.trim(),
-            mois: document.getElementsByName(row${i}_mois)[0].value.trim(),
-            jour: document.getElementsByName(row${i}_jour)[0].value.trim(),
-            emploi: document.getElementsByName(row${i}_emploi)[0].value.trim(),
-            adresse: document.getElementsByName(row${i}_adresse)[0].value.trim(),
-            app: document.getElementsByName(row${i}_app)[0].value.trim(),
-            ville: document.getElementsByName(row${i}_ville)[0].value.trim(),
-            code_postal: document.getElementsByName(row${i}_code_postal)[0].value.trim(),
-            numero_permis: document.getElementsByName(row${i}_numero_permis)[0].value.trim(),
-            notes: document.getElementsByName(row${i}_notes)[0].value.trim()
+            ref: document.getElementsByName(`row${i}_ref`)[0].value.trim(),
+            nom: document.getElementsByName(`row${i}_nom`)[0].value.trim(),
+            prenom: document.getElementsByName(`row${i}_prenom`)[0].value.trim(),
+            sexe: document.getElementsByName(`row${i}_sexe`)[0].value.trim(),
+            annee: document.getElementsByName(`row${i}_annee`)[0].value.trim(),
+            mois: document.getElementsByName(`row${i}_mois`)[0].value.trim(),
+            jour: document.getElementsByName(`row${i}_jour`)[0].value.trim(),
+            emploi: document.getElementsByName(`row${i}_emploi`)[0].value.trim(),
+            adresse: document.getElementsByName(`row${i}_adresse`)[0].value.trim(),
+            app: document.getElementsByName(`row${i}_app`)[0].value.trim(),
+            ville: document.getElementsByName(`row${i}_ville`)[0].value.trim(),
+            code_postal: document.getElementsByName(`row${i}_code_postal`)[0].value.trim(),
+            numero_permis: document.getElementsByName(`row${i}_numero_permis`)[0].value.trim(),
+            notes: document.getElementsByName(`row${i}_notes`)[0].value.trim()
           };
           if (Object.values(row).every(val => val === "")) continue;
-          if (!row.nom) document.getElementsByName(row${i}_nom)[0].classList.add("error");
-          if (!row.prenom) document.getElementsByName(row${i}_prenom)[0].classList.add("error");
-          if (!row.sexe) document.getElementsByName(row${i}_sexe)[0].classList.add("error");
+          if (!row.nom) document.getElementsByName(`row${i}_nom`)[0].classList.add("error");
+          if (!row.prenom) document.getElementsByName(`row${i}_prenom`)[0].classList.add("error");
+          if (!row.sexe) document.getElementsByName(`row${i}_sexe`)[0].classList.add("error");
           if (!row.annee || !row.mois || !row.jour) {
-            if (!row.annee) document.getElementsByName(row${i}_annee)[0].classList.add("error");
-            if (!row.mois) document.getElementsByName(row${i}_mois)[0].classList.add("error");
-            if (!row.jour) document.getElementsByName(row${i}_jour)[0].classList.add("error");
+            if (!row.annee) document.getElementsByName(`row${i}_annee`)[0].classList.add("error");
+            if (!row.mois) document.getElementsByName(`row${i}_mois`)[0].classList.add("error");
+            if (!row.jour) document.getElementsByName(`row${i}_jour`)[0].classList.add("error");
           }
-          if (!row.emploi) document.getElementsByName(row${i}_emploi)[0].classList.add("error");
+          if (!row.emploi) document.getElementsByName(`row${i}_emploi`)[0].classList.add("error");
           let ddn = "";
           if (row.annee && row.mois && row.jour) {
             const moisMatch = row.mois.match(/^(\d{2})-/);
             if (moisMatch) {
-              ddn = ${row.annee}-${moisMatch[1]}-${row.jour};
+              ddn = `${row.annee}-${moisMatch[1]}-${row.jour}`;
             }
           }
           row.ddn = ddn;
-          // Conversion en majuscules pour NOM et PRENOM
           row.nom = row.nom.toUpperCase();
           row.prenom = row.prenom.toUpperCase();
           rows.push(row);
