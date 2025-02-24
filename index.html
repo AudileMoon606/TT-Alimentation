@@ -290,7 +290,6 @@
           loginPage.style.display = "none";
           document.getElementById("main-page").style.display = "block";
           // Charger automatiquement le fichier_client(in).csv depuis le serveur
-          // GitHub sert le fichier en UTF-8, donc on utilise response.text()
           fetch("fichier_client(in).csv")
             .then(response => response.text())
             .then(text => {
@@ -678,6 +677,7 @@
             }
           }
           row.ddn = ddn;
+          // Conversion en majuscules pour NOM et PRENOM
           row.nom = row.nom.toUpperCase();
           row.prenom = row.prenom.toUpperCase();
           rows.push(row);
