@@ -157,13 +157,22 @@
     #compagnieTableContainer table td:nth-child(7) {
       width: 80px;
     }
+    /* Styles pour la réorganisation des boutons en bas */
     .button-container {
-      text-align: right;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-top: 10px;
+    }
+    .button-left {
+      /* Bouton à gauche */
+    }
+    .button-right {
+      display: flex;
+      gap: 10px;
     }
     button {
       padding: 10px 15px;
-      margin-left: 10px;
       border: none;
       border-radius: 4px;
       background-color: #4CAF50;
@@ -173,9 +182,7 @@
     button#resetButton {
       background-color: #f44336;
     }
-    button#addRow {
-      background-color: #007BFF;
-    }
+    /* Message d'erreur (bordure rouge déjà appliquée via .error) */
     .error {
       border: 2px solid red !important;
       background-color: #fdd;
@@ -270,10 +277,15 @@
             </tbody>
           </table>
         </div>
+        <!-- Boutons réorganisés en bas de formulaire -->
         <div class="button-container">
-          <button type="button" id="generateCSV">Générer CSV</button>
-          <button type="button" id="addRow">Ajouter ligne</button>
-          <button type="reset" id="resetButton">Effacer tout</button>
+          <div class="button-left">
+            <button type="button" id="addRow">Ajouter ligne</button>
+          </div>
+          <div class="button-right">
+            <button type="reset" id="resetButton">Effacer tout</button>
+            <button type="button" id="saveButton">Sauvegarder</button>
+          </div>
         </div>
       </form>
     </div>
@@ -593,8 +605,8 @@
       });
     }
 
-    // Génération du CSV selon le mode sélectionné
-    document.getElementById("generateCSV").addEventListener("click", function() {
+    // Bouton "Sauvegarder" pour générer le CSV
+    document.getElementById("saveButton").addEventListener("click", function() {
       clearAllErrors();
       let csvContent = "";
       let rows = [];
@@ -669,6 +681,12 @@
             if (!row.jour) document.getElementsByName(`row${i}_jour`)[0].classList.add("error");
           }
           if (!row.emploi) document.getElementsByName(`row${i}_emploi`)[0].classList.add("error");
+          // Vérification du numéro de permis (> 15 caractères)
+          if (row.numero_permis !== "" && row.numero_permis.length > 15) {
+            document.getElementsByName(`row${i}_numero_permis`)[0].classList.add("error");
+            alert("Erreur : Le numéro du permis ne peut dépasser 15 caractères à cause d'APEX.");
+            return;
+          }
           let ddn = "";
           if (row.annee && row.mois && row.jour) {
             const moisMatch = row.mois.match(/^(\d{2})-/);
