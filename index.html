@@ -130,7 +130,7 @@
     }
     /* Pour le mode par défaut (14 colonnes) :
          Affichées : REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
-         (CSV en-têtes restent : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
+         (CSV en-têtes : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
          La colonne VILLE est masquée sur le site.
     */
     #defaultTableContainer table th:nth-child(5),
@@ -157,7 +157,7 @@
     /* Pour le mode CSV Compagnie (8 colonnes) :
          Affichées : REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, POSTAL, NOTES
          (CSV en-têtes : NUMERO_REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, CODE_POSTAL, NOTES)
-         Le champ EMPLOI est fixé à "Compagnie" et non modifiable.
+         Le champ EMPLOI est fixé à "COMPAGNIE" et non modifiable.
     */
     #compagnieTableContainer table th:nth-child(6),
     #compagnieTableContainer table td:nth-child(6) {
@@ -167,7 +167,7 @@
     #compagnieTableContainer table td:nth-child(7) {
       width: 80px;
     }
-    /* Réorganisation des boutons en bas */
+    /* Réorganisation des boutons en bas : tous les boutons sont alignés à droite */
     .button-container {
       display: flex;
       justify-content: flex-end;
@@ -190,7 +190,7 @@
     button#resetButton {
       background-color: #f44336;
     }
-    /* Message d'erreur (bordure rouge déjà appliquée via .error) */
+    /* Message d'erreur (bordure rouge et fond rose via .error) */
     .error {
       border: 2px solid red !important;
       background-color: #fdd;
@@ -285,7 +285,7 @@
             </tbody>
           </table>
         </div>
-        <!-- Boutons réorganisés à droite -->
+        <!-- Boutons alignés à droite -->
         <div class="button-container">
           <button type="button" id="addRow">Ajouter ligne</button>
           <button type="reset" id="resetButton">Effacer tout</button>
@@ -701,6 +701,22 @@
             const moisMatch = row.mois.match(/^(\d{2})-/);
             if (moisMatch) {
               ddn = `${row.annee}-${moisMatch[1]}-${row.jour}`;
+            }
+            // Validation de l'âge : doit être entre 16 et 100 ans
+            const monthNumber = parseInt(row.mois.substr(0,2));
+            const birthDate = new Date(parseInt(row.annee), monthNumber - 1, parseInt(row.jour));
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+              age--;
+            }
+            if (age < 16 || age > 100) {
+              document.getElementsByName(`row${i}_annee`)[0].classList.add("error");
+              document.getElementsByName(`row${i}_mois`)[0].classList.add("error");
+              document.getElementsByName(`row${i}_jour`)[0].classList.add("error");
+              alert("Erreur : L'âge doit être entre 16 et 100 ans.");
+              return;
             }
           }
           row.ddn = ddn;
