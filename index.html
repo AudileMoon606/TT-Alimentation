@@ -12,6 +12,10 @@
       background-color: #f7f7f7;
       color: #333;
     }
+    /* Transformation visuelle en majuscules pour tous les champs de saisie */
+    input, select {
+      text-transform: uppercase;
+    }
     /* Page de login en plein écran */
     #login-page {
       position: fixed;
@@ -126,7 +130,7 @@
     }
     /* Pour le mode par défaut (14 colonnes) :
          Affichées : REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
-         (CSV en-têtes restent : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
+         (CSV en-têtes : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
     */
     #defaultTableContainer table th:nth-child(5),
     #defaultTableContainer table td:nth-child(5) {
@@ -144,11 +148,12 @@
     #defaultTableContainer table td:nth-child(13) {
       width: 15ch;
     }
-    /* Pour le mode CSV Compagnie (8 colonnes) :
-         Affichées : REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, POSTAL, NOTES
-         (CSV en-têtes : NUMERO_REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, CODE_POSTAL, NOTES)
-         Le champ EMPLOI est fixé à "Compagnie" et non modifiable.
-    */
+    /* Masquage de la colonne "VILLE" dans le tableau par défaut */
+    #defaultTableContainer table th:nth-child(11),
+    #defaultTableContainer table td:nth-child(11) {
+      display: none;
+    }
+    /* Pour le mode CSV Compagnie (8 colonnes) */
     #compagnieTableContainer table th:nth-child(6),
     #compagnieTableContainer table td:nth-child(6) {
       width: 60px;
@@ -157,32 +162,23 @@
     #compagnieTableContainer table td:nth-child(7) {
       width: 80px;
     }
-    /* Styles pour la réorganisation des boutons en bas */
+    /* Boutons réorganisés, alignés à droite */
     .button-container {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
+      gap: 10px;
       margin-top: 10px;
     }
-    .button-left {
-      /* Bouton à gauche */
+    /* Bouton "Ajouter ligne" en bleu */
+    #addRow {
+      background-color: #007BFF;
     }
-    .button-right {
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 4px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-    button#resetButton {
+    /* Bouton "Effacer tout" */
+    #resetButton {
       background-color: #f44336;
     }
-    /* Message d'erreur (bordure rouge déjà appliquée via .error) */
+    /* Message d'erreur */
     .error {
       border: 2px solid red !important;
       background-color: #fdd;
@@ -216,7 +212,7 @@
     <!-- Section de sélection du client -->
     <div class="section" id="clientSelection">
       <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
-      <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
+      <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - CURATEUR PUBLIC DU QUÉBEC">
       <datalist id="clientList"></datalist>
       <button type="button" id="clearClient">Désélectionner le client</button>
     </div>
@@ -277,25 +273,28 @@
             </tbody>
           </table>
         </div>
-        <!-- Boutons réorganisés en bas de formulaire -->
+        <!-- Boutons alignés à droite -->
         <div class="button-container">
-          <div class="button-left">
-            <button type="button" id="addRow">Ajouter ligne</button>
-          </div>
-          <div class="button-right">
-            <button type="reset" id="resetButton">Effacer tout</button>
-            <button type="button" id="saveButton">Sauvegarder</button>
-          </div>
+          <button type="button" id="addRow">Ajouter ligne</button>
+          <button type="reset" id="resetButton">Effacer tout</button>
+          <button type="button" id="saveButton">Télécharger CSV</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
+    // Écouteur global pour forcer la saisie en majuscules (même pour les champs ajoutés dynamiquement)
+    document.addEventListener('input', function(e) {
+      if(e.target.tagName === 'INPUT') {
+        e.target.value = e.target.value.toUpperCase();
+      }
+    });
+
     // PAGE DE LOGIN
     document.getElementById("loginButton").addEventListener("click", function() {
       const pwd = document.getElementById("password").value;
-      if(pwd === "Alim7420"){
+      if(pwd === "ALIM7420"){
         const loginPage = document.getElementById("login-page");
         loginPage.classList.add("fade-out");
         setTimeout(() => {
@@ -367,8 +366,8 @@
         if (clients[clientNum]) {
           selectedClient = clients[clientNum];
           updateEmploiOptions();
-          // Afficher la case CSV Compagnie si "Compagnie" est proposé
-          if (selectedClient.emplois.includes("Compagnie")) {
+          // Afficher la case CSV Compagnie si "COMPAGNIE" est proposé
+          if (selectedClient.emplois.includes("COMPAGNIE")) {
             document.getElementById("modeCompagnieContainer").style.display = "block";
           } else {
             document.getElementById("modeCompagnieContainer").style.display = "none";
@@ -436,18 +435,18 @@
       let rowsHtml = "";
       const moisOptions = `
         <option value=""></option>
-        <option value="01- Janvier">01- Janvier</option>
-        <option value="02- Février">02- Février</option>
-        <option value="03- Mars">03- Mars</option>
-        <option value="04- Avril">04- Avril</option>
-        <option value="05- Mai">05- Mai</option>
-        <option value="06- Juin">06- Juin</option>
-        <option value="07- Juillet">07- Juillet</option>
-        <option value="08- Août">08- Août</option>
-        <option value="09- Septembre">09- Septembre</option>
-        <option value="10- Octobre">10- Octobre</option>
-        <option value="11- Novembre">11- Novembre</option>
-        <option value="12- Décembre">12- Décembre</option>`;
+        <option value="01- JANVIER">01- JANVIER</option>
+        <option value="02- FÉVRIER">02- FÉVRIER</option>
+        <option value="03- MARS">03- MARS</option>
+        <option value="04- AVRIL">04- AVRIL</option>
+        <option value="05- MAI">05- MAI</option>
+        <option value="06- JUIN">06- JUIN</option>
+        <option value="07- JUILLET">07- JUILLET</option>
+        <option value="08- AOÛT">08- AOÛT</option>
+        <option value="09- SEPTEMBRE">09- SEPTEMBRE</option>
+        <option value="10- OCTOBRE">10- OCTOBRE</option>
+        <option value="11- NOVEMBRE">11- NOVEMBRE</option>
+        <option value="12- DÉCEMBRE">12- DÉCEMBRE</option>`;
       let jourOptions = '<option value=""></option>';
       for (let d = 1; d <= 31; d++){
         const day = String(d).padStart(2, '0');
@@ -503,7 +502,7 @@
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
           <td><input type="text" name="comp_row${i}_matricule"></td>
-          <td><input type="text" name="comp_row${i}_emploi" value="Compagnie" readonly style="background-color: #eee;"></td>
+          <td><input type="text" name="comp_row${i}_emploi" value="COMPAGNIE" readonly style="background-color: #EEE;"></td>
           <td><input type="text" name="comp_row${i}_adresse"></td>
           <td><input type="text" name="comp_row${i}_app" style="width: 60px;"></td>
           <td><input type="text" name="comp_row${i}_code_postal" style="width: 80px;"></td>
@@ -528,18 +527,18 @@
       const i = tbody.rows.length;
       const moisOptions = `
         <option value=""></option>
-        <option value="01- Janvier">01- Janvier</option>
-        <option value="02- Février">02- Février</option>
-        <option value="03- Mars">03- Mars</option>
-        <option value="04- Avril">04- Avril</option>
-        <option value="05- Mai">05- Mai</option>
-        <option value="06- Juin">06- Juin</option>
-        <option value="07- Juillet">07- Juillet</option>
-        <option value="08- Août">08- Août</option>
-        <option value="09- Septembre">09- Septembre</option>
-        <option value="10- Octobre">10- Octobre</option>
-        <option value="11- Novembre">11- Novembre</option>
-        <option value="12- Décembre">12- Décembre</option>`;
+        <option value="01- JANVIER">01- JANVIER</option>
+        <option value="02- FÉVRIER">02- FÉVRIER</option>
+        <option value="03- MARS">03- MARS</option>
+        <option value="04- AVRIL">04- AVRIL</option>
+        <option value="05- MAI">05- MAI</option>
+        <option value="06- JUIN">06- JUIN</option>
+        <option value="07- JUILLET">07- JUILLET</option>
+        <option value="08- AOÛT">08- AOÛT</option>
+        <option value="09- SEPTEMBRE">09- SEPTEMBRE</option>
+        <option value="10- OCTOBRE">10- OCTOBRE</option>
+        <option value="11- NOVEMBRE">11- NOVEMBRE</option>
+        <option value="12- DÉCEMBRE">12- DÉCEMBRE</option>`;
       let jourOptions = '<option value=""></option>';
       for (let d = 1; d <= 31; d++){
         const day = String(d).padStart(2, '0');
@@ -590,7 +589,7 @@
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
           <td><input type="text" name="comp_row${i}_matricule"></td>
-          <td><input type="text" name="comp_row${i}_emploi" value="Compagnie" readonly style="background-color: #eee;"></td>
+          <td><input type="text" name="comp_row${i}_emploi" value="COMPAGNIE" readonly style="background-color: #EEE;"></td>
           <td><input type="text" name="comp_row${i}_adresse"></td>
           <td><input type="text" name="comp_row${i}_app" style="width: 60px;"></td>
           <td><input type="text" name="comp_row${i}_code_postal" style="width: 80px;"></td>
@@ -605,7 +604,7 @@
       });
     }
 
-    // Bouton "Sauvegarder" pour générer le CSV
+    // Bouton "Télécharger CSV" pour générer le CSV
     document.getElementById("saveButton").addEventListener("click", function() {
       clearAllErrors();
       let csvContent = "";
@@ -622,12 +621,14 @@
             ref: document.getElementsByName(`comp_row${i}_ref`)[0].value.trim(),
             firme: document.getElementsByName(`comp_row${i}_firme`)[0].value.trim(),
             matricule: document.getElementsByName(`comp_row${i}_matricule`)[0].value.trim(),
-            emploi: "Compagnie",
+            emploi: "COMPAGNIE",
             adresse: document.getElementsByName(`comp_row${i}_adresse`)[0].value.trim(),
             app: document.getElementsByName(`comp_row${i}_app`)[0].value.trim(),
             code_postal: document.getElementsByName(`comp_row${i}_code_postal`)[0].value.trim(),
             notes: document.getElementsByName(`comp_row${i}_notes`)[0].value.trim()
           };
+          // Vérification du code postal (7 caractères avec un espace au milieu)
+          row.code_postal = /^[A-Z0-9]{3} [A-Z0-9]{3}$/.test(row.code_postal) ? row.code_postal : "";
           if (Object.values(row).every(val => val === "")) continue;
           rows.push(row);
         }
@@ -650,7 +651,7 @@
           ];
           csvContent += csvRow.join(";") + "\n";
         });
-        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") + "_Compagnie_" + timestamp + ".csv";
+        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") + "_COMPAGNIE_" + timestamp + ".csv";
       }
       // Mode par défaut
       else {
@@ -687,6 +688,8 @@
             alert("Erreur : Le numéro du permis ne peut dépasser 15 caractères à cause d'APEX.");
             return;
           }
+          // Vérification du code postal (doit contenir 7 caractères avec un espace au milieu)
+          row.code_postal = /^[A-Z0-9]{3} [A-Z0-9]{3}$/.test(row.code_postal) ? row.code_postal : "";
           let ddn = "";
           if (row.annee && row.mois && row.jour) {
             const moisMatch = row.mois.match(/^(\d{2})-/);
@@ -695,7 +698,7 @@
             }
           }
           row.ddn = ddn;
-          // Conversion en majuscules pour NOM et PRENOM
+          // Conversion en majuscules pour NOM et PRENOM (les autres champs restent inchangés, car l'écouteur global s'en charge)
           row.nom = row.nom.toUpperCase();
           row.prenom = row.prenom.toUpperCase();
           rows.push(row);
