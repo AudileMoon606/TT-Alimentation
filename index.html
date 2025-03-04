@@ -12,10 +12,6 @@
       background-color: #f7f7f7;
       color: #333;
     }
-    /* Transformation visuelle en majuscules pour tous les champs de saisie */
-    input, select {
-      text-transform: uppercase;
-    }
     /* Page de login en plein écran */
     #login-page {
       position: fixed;
@@ -103,6 +99,10 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    /* Forcer la saisie en majuscules (affichage) */
+    input[type="text"] {
+      text-transform: uppercase;
+    }
     /* Bouton de désélection du client */
     #clearClient {
       margin-top: 5px;
@@ -130,7 +130,8 @@
     }
     /* Pour le mode par défaut (14 colonnes) :
          Affichées : REFERENCE, NOM, PRENOM, SEXE, ANNÉE, MOIS, JOUR, EMPLOI, ADRESSE, APP, VILLE, POSTAL, PERMIS, NOTES
-         (CSV en-têtes : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
+         (CSV en-têtes restent : NUMERO_REFERENCE, NOM, PRENOM, SEXE, DDN, EMPLOI, ADRESSE, APP, VILLE, CODE_POSTAL, NUMERO_PERMIS, NOTES)
+         La colonne VILLE est masquée sur le site.
     */
     #defaultTableContainer table th:nth-child(5),
     #defaultTableContainer table td:nth-child(5) {
@@ -148,12 +149,16 @@
     #defaultTableContainer table td:nth-child(13) {
       width: 15ch;
     }
-    /* Masquage de la colonne "VILLE" dans le tableau par défaut */
+    /* Masquer la colonne VILLE (11ème colonne) */
     #defaultTableContainer table th:nth-child(11),
     #defaultTableContainer table td:nth-child(11) {
       display: none;
     }
-    /* Pour le mode CSV Compagnie (8 colonnes) */
+    /* Pour le mode CSV Compagnie (8 colonnes) :
+         Affichées : REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, POSTAL, NOTES
+         (CSV en-têtes : NUMERO_REFERENCE, FIRME, MATRICULE, EMPLOI, ADRESSE, APP, CODE_POSTAL, NOTES)
+         Le champ EMPLOI est fixé à "Compagnie" et non modifiable.
+    */
     #compagnieTableContainer table th:nth-child(6),
     #compagnieTableContainer table td:nth-child(6) {
       width: 60px;
@@ -162,23 +167,30 @@
     #compagnieTableContainer table td:nth-child(7) {
       width: 80px;
     }
-    /* Boutons réorganisés, alignés à droite */
+    /* Réorganisation des boutons en bas */
     .button-container {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      gap: 10px;
       margin-top: 10px;
+      gap: 10px;
     }
-    /* Bouton "Ajouter ligne" en bleu */
-    #addRow {
-      background-color: #007BFF;
+    /* Le bouton d'ajout de ligne doit être bleu */
+    button#addRow {
+      background-color: blue;
     }
-    /* Bouton "Effacer tout" */
-    #resetButton {
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button#resetButton {
       background-color: #f44336;
     }
-    /* Message d'erreur */
+    /* Message d'erreur (bordure rouge déjà appliquée via .error) */
     .error {
       border: 2px solid red !important;
       background-color: #fdd;
@@ -212,7 +224,7 @@
     <!-- Section de sélection du client -->
     <div class="section" id="clientSelection">
       <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
-      <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - CURATEUR PUBLIC DU QUÉBEC">
+      <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
       <datalist id="clientList"></datalist>
       <button type="button" id="clearClient">Désélectionner le client</button>
     </div>
@@ -273,7 +285,7 @@
             </tbody>
           </table>
         </div>
-        <!-- Boutons alignés à droite -->
+        <!-- Boutons réorganisés à droite -->
         <div class="button-container">
           <button type="button" id="addRow">Ajouter ligne</button>
           <button type="reset" id="resetButton">Effacer tout</button>
@@ -284,17 +296,10 @@
   </div>
 
   <script>
-    // Écouteur global pour forcer la saisie en majuscules (même pour les champs ajoutés dynamiquement)
-    document.addEventListener('input', function(e) {
-      if(e.target.tagName === 'INPUT') {
-        e.target.value = e.target.value.toUpperCase();
-      }
-    });
-
     // PAGE DE LOGIN
     document.getElementById("loginButton").addEventListener("click", function() {
       const pwd = document.getElementById("password").value;
-      if(pwd === "ALIM7420"){
+      if(pwd === "Alim7420"){
         const loginPage = document.getElementById("login-page");
         loginPage.classList.add("fade-out");
         setTimeout(() => {
@@ -366,8 +371,8 @@
         if (clients[clientNum]) {
           selectedClient = clients[clientNum];
           updateEmploiOptions();
-          // Afficher la case CSV Compagnie si "COMPAGNIE" est proposé
-          if (selectedClient.emplois.includes("COMPAGNIE")) {
+          // Afficher la case CSV Compagnie si "Compagnie" est proposé
+          if (selectedClient.emplois.includes("Compagnie")) {
             document.getElementById("modeCompagnieContainer").style.display = "block";
           } else {
             document.getElementById("modeCompagnieContainer").style.display = "none";
@@ -502,7 +507,7 @@
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
           <td><input type="text" name="comp_row${i}_matricule"></td>
-          <td><input type="text" name="comp_row${i}_emploi" value="COMPAGNIE" readonly style="background-color: #EEE;"></td>
+          <td><input type="text" name="comp_row${i}_emploi" value="COMPAGNIE" readonly style="background-color: #eee;"></td>
           <td><input type="text" name="comp_row${i}_adresse"></td>
           <td><input type="text" name="comp_row${i}_app" style="width: 60px;"></td>
           <td><input type="text" name="comp_row${i}_code_postal" style="width: 80px;"></td>
@@ -589,7 +594,7 @@
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
           <td><input type="text" name="comp_row${i}_matricule"></td>
-          <td><input type="text" name="comp_row${i}_emploi" value="COMPAGNIE" readonly style="background-color: #EEE;"></td>
+          <td><input type="text" name="comp_row${i}_emploi" value="COMPAGNIE" readonly style="background-color: #eee;"></td>
           <td><input type="text" name="comp_row${i}_adresse"></td>
           <td><input type="text" name="comp_row${i}_app" style="width: 60px;"></td>
           <td><input type="text" name="comp_row${i}_code_postal" style="width: 80px;"></td>
@@ -627,8 +632,6 @@
             code_postal: document.getElementsByName(`comp_row${i}_code_postal`)[0].value.trim(),
             notes: document.getElementsByName(`comp_row${i}_notes`)[0].value.trim()
           };
-          // Vérification du code postal (7 caractères avec un espace au milieu)
-          row.code_postal = /^[A-Z0-9]{3} [A-Z0-9]{3}$/.test(row.code_postal) ? row.code_postal : "";
           if (Object.values(row).every(val => val === "")) continue;
           rows.push(row);
         }
@@ -651,7 +654,7 @@
           ];
           csvContent += csvRow.join(";") + "\n";
         });
-        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") + "_COMPAGNIE_" + timestamp + ".csv";
+        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") + "_Compagnie_" + timestamp + ".csv";
       }
       // Mode par défaut
       else {
@@ -688,8 +691,11 @@
             alert("Erreur : Le numéro du permis ne peut dépasser 15 caractères à cause d'APEX.");
             return;
           }
-          // Vérification du code postal (doit contenir 7 caractères avec un espace au milieu)
-          row.code_postal = /^[A-Z0-9]{3} [A-Z0-9]{3}$/.test(row.code_postal) ? row.code_postal : "";
+          // Vérification du code postal : il doit contenir exactement 7 caractères avec un espace au milieu
+          let cp = row.code_postal;
+          if (!(cp.length === 7 && cp.charAt(3) === " ")) {
+            row.code_postal = "";
+          }
           let ddn = "";
           if (row.annee && row.mois && row.jour) {
             const moisMatch = row.mois.match(/^(\d{2})-/);
@@ -698,7 +704,7 @@
             }
           }
           row.ddn = ddn;
-          // Conversion en majuscules pour NOM et PRENOM (les autres champs restent inchangés, car l'écouteur global s'en charge)
+          // Conversion en majuscules pour NOM et PRENOM (les autres champs sont déjà convertis via l'événement global)
           row.nom = row.nom.toUpperCase();
           row.prenom = row.prenom.toUpperCase();
           rows.push(row);
@@ -750,6 +756,13 @@
       document.getElementById("compagnieTableContainer").style.display = "none";
       document.getElementById("defaultTableContainer").style.display = "block";
       document.getElementById("modeCompagnie").checked = false;
+    });
+
+    // Délégation d'événement pour forcer la saisie en majuscules dans tous les input de type texte
+    document.addEventListener('input', function(e) {
+      if(e.target && e.target.tagName === 'INPUT' && e.target.type === 'text') {
+          e.target.value = e.target.value.toUpperCase();
+      }
     });
   </script>
 </body>
