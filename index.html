@@ -114,6 +114,25 @@
       color: #fff;
       cursor: pointer;
     }
+    /* Styles pour les boutons de lignes à droite de la sélection client */
+    #clientSelection {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .client-info {
+      flex: 1;
+    }
+    .client-buttons button {
+      margin-left: 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
     /* Conteneur pour l'affichage horizontal */
     .table-container {
       overflow-x: auto;
@@ -221,12 +240,19 @@
       <h1 class="header-title">Outil TT Alimentation</h1>
     </div>
 
-    <!-- Section de sélection du client -->
+    <!-- Section de sélection du client avec les boutons de lignes à droite -->
     <div class="section" id="clientSelection">
-      <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
-      <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
-      <datalist id="clientList"></datalist>
-      <button type="button" id="clearClient">Désélectionner le client</button>
+      <div class="client-info">
+        <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
+        <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
+        <datalist id="clientList"></datalist>
+        <button type="button" id="clearClient">Désélectionner le client</button>
+      </div>
+      <div class="client-buttons">
+        <button type="button" id="set1Row">1 ligne</button>
+        <button type="button" id="set5Rows">5 lignes</button>
+        <button type="button" id="set10Rows">10 lignes</button>
+      </div>
     </div>
 
     <!-- Conteneur pour la case "CSV Compagnie" (affichée si l'emploi "Compagnie" est proposé) -->
@@ -424,18 +450,18 @@
       if (isCompagnie) {
         document.getElementById("defaultTableContainer").style.display = "none";
         document.getElementById("compagnieTableContainer").style.display = "block";
-        generateCompagnieRows();
+        generateCompagnieRows(); // utilise la valeur par défaut (10 lignes)
       } else {
         document.getElementById("compagnieTableContainer").style.display = "none";
         document.getElementById("defaultTableContainer").style.display = "block";
-        generateDefaultRows();
+        generateDefaultRows(); // utilise la valeur par défaut (10 lignes)
         updateEmploiOptions();
       }
     }
 
-    // Génération initiale du tableau par défaut (10 lignes)
-    function generateDefaultRows() {
-      defaultRowCount = 10;
+    // Génération initiale du tableau par défaut avec un nombre de lignes paramétrable (par défaut 10)
+    function generateDefaultRows(count = 10) {
+      defaultRowCount = count;
       const tbody = document.querySelector("#defaultTableContainer tbody");
       let rowsHtml = "";
       const moisOptions = `
@@ -457,7 +483,7 @@
         const day = String(d).padStart(2, '0');
         jourOptions += `<option value="${day}">${day}</option>`;
       }
-      for (let i = 0; i < defaultRowCount; i++) {
+      for (let i = 0; i < count; i++) {
         rowsHtml += `<tr>
           <td><input type="text" name="row${i}_ref"></td>
           <td><input type="text" name="row${i}_nom"></td>
@@ -497,12 +523,12 @@
       tbody.innerHTML = rowsHtml;
     }
 
-    // Génération initiale du tableau CSV Compagnie (10 lignes)
-    function generateCompagnieRows() {
-      compagnieRowCount = 10;
+    // Génération initiale du tableau CSV Compagnie avec un nombre de lignes paramétrable (par défaut 10)
+    function generateCompagnieRows(count = 10) {
+      compagnieRowCount = count;
       const tbody = document.querySelector("#compagnieTableContainer tbody");
       let rowsHtml = "";
-      for (let i = 0; i < compagnieRowCount; i++) {
+      for (let i = 0; i < count; i++) {
         rowsHtml += `<tr>
           <td><input type="text" name="comp_row${i}_ref"></td>
           <td><input type="text" name="comp_row${i}_firme"></td>
@@ -778,6 +804,34 @@
     document.addEventListener('input', function(e) {
       if(e.target && e.target.tagName === 'INPUT' && e.target.type === 'text') {
           e.target.value = e.target.value.toUpperCase();
+      }
+    });
+
+    // Nouveaux boutons pour générer un nombre précis de lignes
+    document.getElementById("set1Row").addEventListener("click", function() {
+      if (document.getElementById("modeCompagnie").checked) {
+        generateCompagnieRows(1);
+      } else {
+        generateDefaultRows(1);
+        updateEmploiOptions();
+      }
+    });
+
+    document.getElementById("set5Rows").addEventListener("click", function() {
+      if (document.getElementById("modeCompagnie").checked) {
+        generateCompagnieRows(5);
+      } else {
+        generateDefaultRows(5);
+        updateEmploiOptions();
+      }
+    });
+
+    document.getElementById("set10Rows").addEventListener("click", function() {
+      if (document.getElementById("modeCompagnie").checked) {
+        generateCompagnieRows(10);
+      } else {
+        generateDefaultRows(10);
+        updateEmploiOptions();
       }
     });
   </script>
