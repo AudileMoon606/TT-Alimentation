@@ -118,8 +118,8 @@
     #clientSelection {
       display: flex;
       align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 15px;
+      gap: 5px; /* Espace réduit pour rapprocher les éléments */
+      margin-bottom: 10px;
     }
     .client-info {
       flex: 1;
@@ -129,7 +129,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 10px;
+      gap: 5px;
     }
     .print-label {
       font-size: 16px;
@@ -250,7 +250,7 @@
       <h1 class="header-title">Outil TT Alimentation</h1>
     </div>
 
-    <!-- Section de sélection du client avec la nouvelle option d'impression et les boutons de lignes -->
+    <!-- Section de sélection du client avec la nouvelle option d'impression et les boutons de lignes rapprochés -->
     <div class="section" id="clientSelection">
       <div class="client-info">
         <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
@@ -504,29 +504,29 @@
       for (let i = 0; i < count; i++) {
         rowsHtml += `<tr>
           <td><input type="text" name="row${i}_ref"></td>
-          <td><input type="text" name="row${i}_nom"></td>
-          <td><input type="text" name="row${i}_prenom"></td>
+          <td><input type="text" name="row${i}_nom" required></td>
+          <td><input type="text" name="row${i}_prenom" required></td>
           <td>
-            <select name="row${i}_sexe">
+            <select name="row${i}_sexe" required>
               <option value=""></option>
               <option value="M">M</option>
               <option value="F">F</option>
               <option value="X">X</option>
             </select>
           </td>
-          <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width: 60px;"></td>
+          <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width: 60px;" required></td>
           <td>
-            <select name="row${i}_mois">
+            <select name="row${i}_mois" required>
               ${moisOptions}
             </select>
           </td>
           <td>
-            <select name="row${i}_jour">
+            <select name="row${i}_jour" required>
               ${jourOptions}
             </select>
           </td>
           <td>
-            <select name="row${i}_emploi">
+            <select name="row${i}_emploi" required>
               <option value=""></option>
             </select>
           </td>
@@ -595,29 +595,29 @@
       }
       const newRow = `<tr>
           <td><input type="text" name="row${i}_ref"></td>
-          <td><input type="text" name="row${i}_nom"></td>
-          <td><input type="text" name="row${i}_prenom"></td>
+          <td><input type="text" name="row${i}_nom" required></td>
+          <td><input type="text" name="row${i}_prenom" required></td>
           <td>
-            <select name="row${i}_sexe">
+            <select name="row${i}_sexe" required>
               <option value=""></option>
               <option value="M">M</option>
               <option value="F">F</option>
               <option value="X">X</option>
             </select>
           </td>
-          <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width: 60px;"></td>
+          <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width: 60px;" required></td>
           <td>
-            <select name="row${i}_mois">
+            <select name="row${i}_mois" required>
               ${moisOptions}
             </select>
           </td>
           <td>
-            <select name="row${i}_jour">
+            <select name="row${i}_jour" required>
               ${jourOptions}
             </select>
           </td>
           <td>
-            <select name="row${i}_emploi">
+            <select name="row${i}_emploi" required>
               <option value=""></option>
             </select>
           </td>
@@ -723,6 +723,7 @@
             notes: document.getElementsByName(`row${i}_notes`)[0].value.trim()
           };
           if (Object.values(row).every(val => val === "")) continue;
+          // Vérifications des champs obligatoires
           if (!row.nom) document.getElementsByName(`row${i}_nom`)[0].classList.add("error");
           if (!row.prenom) document.getElementsByName(`row${i}_prenom`)[0].classList.add("error");
           if (!row.sexe) document.getElementsByName(`row${i}_sexe`)[0].classList.add("error");
