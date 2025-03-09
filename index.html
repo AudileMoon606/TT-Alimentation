@@ -124,7 +124,7 @@
     .client-info {
       flex: 1;
     }
-    /* Nouveau conteneur pour la case d'impression et les boutons de lignes */
+    /* Conteneur pour la case d'impression et les boutons de lignes */
     .client-options {
       display: flex;
       flex-direction: column;
@@ -250,7 +250,7 @@
       <h1 class="header-title">Outil TT Alimentation</h1>
     </div>
 
-    <!-- Section de sélection du client avec la nouvelle option d'impression et les boutons de lignes rapprochés -->
+    <!-- Section de sélection du client avec la nouvelle option d'impression et les boutons rapprochés -->
     <div class="section" id="clientSelection">
       <div class="client-info">
         <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
@@ -705,6 +705,7 @@
       }
       // Mode par défaut
       else {
+        let valid = true;
         for (let i = 0; i < document.querySelector("#defaultTableContainer tbody").rows.length; i++) {
           const row = {
             ref: document.getElementsByName(`row${i}_ref`)[0].value.trim(),
@@ -722,17 +723,18 @@
             numero_permis: document.getElementsByName(`row${i}_numero_permis`)[0].value.trim(),
             notes: document.getElementsByName(`row${i}_notes`)[0].value.trim()
           };
+          // Si la ligne est entièrement vide, on la saute
           if (Object.values(row).every(val => val === "")) continue;
-          // Vérifications des champs obligatoires
-          if (!row.nom) document.getElementsByName(`row${i}_nom`)[0].classList.add("error");
-          if (!row.prenom) document.getElementsByName(`row${i}_prenom`)[0].classList.add("error");
-          if (!row.sexe) document.getElementsByName(`row${i}_sexe`)[0].classList.add("error");
-          if (!row.annee || !row.mois || !row.jour) {
-            if (!row.annee) document.getElementsByName(`row${i}_annee`)[0].classList.add("error");
-            if (!row.mois) document.getElementsByName(`row${i}_mois`)[0].classList.add("error");
-            if (!row.jour) document.getElementsByName(`row${i}_jour`)[0].classList.add("error");
-          }
-          if (!row.emploi) document.getElementsByName(`row${i}_emploi`)[0].classList.add("error");
+          
+          // Vérification des champs obligatoires
+          if (!row.nom) { document.getElementsByName(`row${i}_nom`)[0].classList.add("error"); valid = false; }
+          if (!row.prenom) { document.getElementsByName(`row${i}_prenom`)[0].classList.add("error"); valid = false; }
+          if (!row.sexe) { document.getElementsByName(`row${i}_sexe`)[0].classList.add("error"); valid = false; }
+          if (!row.annee) { document.getElementsByName(`row${i}_annee`)[0].classList.add("error"); valid = false; }
+          if (!row.mois) { document.getElementsByName(`row${i}_mois`)[0].classList.add("error"); valid = false; }
+          if (!row.jour) { document.getElementsByName(`row${i}_jour`)[0].classList.add("error"); valid = false; }
+          if (!row.emploi) { document.getElementsByName(`row${i}_emploi`)[0].classList.add("error"); valid = false; }
+          
           // Vérification du numéro de permis (> 15 caractères)
           if (row.numero_permis !== "" && row.numero_permis.length > 15) {
             document.getElementsByName(`row${i}_numero_permis`)[0].classList.add("error");
@@ -772,6 +774,10 @@
           row.nom = row.nom.toUpperCase();
           row.prenom = row.prenom.toUpperCase();
           rows.push(row);
+        }
+        if (!valid) {
+          alert("Veuillez remplir tous les champs obligatoires pour chaque ligne non vide.");
+          return;
         }
         if (rows.length === 0) {
           alert("Aucune donnée saisie en mode par défaut.");
