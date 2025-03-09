@@ -114,24 +114,34 @@
       color: #fff;
       cursor: pointer;
     }
-    /* Styles pour les boutons de lignes à droite de la sélection client */
+    /* Conteneur pour la sélection client et les options associées */
     #clientSelection {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 15px;
     }
     .client-info {
       flex: 1;
     }
-    .client-buttons button {
-      margin-left: 5px;
-      padding: 5px 10px;
-      font-size: 14px;
-      border: none;
-      border-radius: 4px;
-      background-color: #4CAF50;
-      color: #fff;
-      cursor: pointer;
+    /* Nouveau conteneur pour la case d'impression et les boutons de lignes */
+    .client-options {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    .print-label {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+    }
+    .print-label input {
+      margin-right: 5px;
+    }
+    .client-buttons {
+      display: flex;
+      gap: 5px;
     }
     /* Conteneur pour l'affichage horizontal */
     .table-container {
@@ -240,7 +250,7 @@
       <h1 class="header-title">Outil TT Alimentation</h1>
     </div>
 
-    <!-- Section de sélection du client avec les boutons de lignes à droite -->
+    <!-- Section de sélection du client avec la nouvelle option d'impression et les boutons de lignes -->
     <div class="section" id="clientSelection">
       <div class="client-info">
         <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
@@ -248,10 +258,16 @@
         <datalist id="clientList"></datalist>
         <button type="button" id="clearClient">Désélectionner le client</button>
       </div>
-      <div class="client-buttons">
-        <button type="button" id="set1Row">1 ligne</button>
-        <button type="button" id="set5Rows">5 lignes</button>
-        <button type="button" id="set10Rows">10 lignes</button>
+      <div class="client-options">
+        <label for="printOption" class="print-label">
+          <input type="checkbox" id="printOption" checked>
+          Imprimer le CSV
+        </label>
+        <div class="client-buttons">
+          <button type="button" id="set1Row">1 ligne</button>
+          <button type="button" id="set5Rows">5 lignes</button>
+          <button type="button" id="set10Rows">10 lignes</button>
+        </div>
       </div>
     </div>
 
@@ -405,6 +421,8 @@
             document.getElementById("modeCompagnie").checked = false;
             toggleTableMode(false);
           }
+          // Réinitialiser l'option d'impression à "Imprimer le CSV"
+          document.getElementById("printOption").checked = true;
         } else {
           selectedClient = null;
         }
@@ -680,7 +698,10 @@
           ];
           csvContent += csvRow.join(";") + "\n";
         });
-        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") + "_Compagnie_" + timestamp + ".csv";
+        // Insertion de l'indicateur "_NOPRINT" si l'option n'est pas cochée
+        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") +
+                       (document.getElementById("printOption").checked ? "" : "_NOPRINT") +
+                       "_Compagnie_" + timestamp + ".csv";
       }
       // Mode par défaut
       else {
@@ -746,7 +767,7 @@
             }
           }
           row.ddn = ddn;
-          // Conversion en majuscules pour NOM et PRENOM (les autres champs sont déjà convertis via l'événement global)
+          // Conversion en majuscules pour NOM et PRENOM
           row.nom = row.nom.toUpperCase();
           row.prenom = row.prenom.toUpperCase();
           rows.push(row);
@@ -774,7 +795,10 @@
           ];
           csvContent += csvRow.join(";") + "\n";
         });
-        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") + "_" + timestamp + ".csv";
+        // Insertion de l'indicateur "_NOPRINT" si l'option n'est pas cochée
+        var filename = selectedClient.number + "-" + selectedClient.name.replace(/ /g, "") +
+                       (document.getElementById("printOption").checked ? "" : "_NOPRINT") +
+                       "_" + timestamp + ".csv";
       }
       
       // Génération du fichier CSV en windows-1252
