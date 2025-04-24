@@ -35,6 +35,7 @@
     .header-container{display:flex;align-items:center;margin-bottom:20px;}
     .header-logo{max-height:60px;margin-right:10px;}
     .header-title{font-size:32px;margin:0;}
+
     .section{
       margin-bottom:20px;background:#fff;padding:15px;border-radius:6px;
       box-shadow:0 2px 4px rgba(0,0,0,.1);
@@ -46,12 +47,10 @@
     }
     input[type=text]{text-transform:uppercase;}
 
+    #clientSelection{display:flex;align-items:flex-start;gap:5px;margin-bottom:10px;}
     #clearClient{
       margin-top:5px;padding:5px 10px;font-size:14px;border:none;border-radius:4px;
       background:#f44336;color:#fff;cursor:pointer;
-    }
-    #clientSelection{
-      display:flex;align-items:flex-start;gap:5px;margin-bottom:10px;
     }
     .client-info{flex:1;}
     .client-buttons{display:flex;gap:5px;}
@@ -60,19 +59,25 @@
     table{width:100%;border-collapse:collapse;background:#fff;}
     th,td{border:1px solid #ddd;padding:8px;text-align:left;}
 
-    /* Largeurs spécifiques */
+    /* Largeurs utiles (restent valides qu’on masque ou non FIRME/MATRICULE) */
     #defaultTableContainer th:nth-child(7),
-    #defaultTableContainer td:nth-child(7){width:60px;}      /* ANNÉE */
+    #defaultTableContainer td:nth-child(7){width:60px;}  /* ANNÉE */
     #defaultTableContainer th:nth-child(12),
-    #defaultTableContainer td:nth-child(12){width:60px;}     /* APP   */
+    #defaultTableContainer td:nth-child(12){width:60px;} /* APP   */
     #defaultTableContainer th:nth-child(14),
-    #defaultTableContainer td:nth-child(14){width:80px;}     /* CP    */
+    #defaultTableContainer td:nth-child(14){width:80px;} /* CP    */
     #defaultTableContainer th:nth-child(15),
-    #defaultTableContainer td:nth-child(15){width:15ch;}     /* PERMIS */
+    #defaultTableContainer td:nth-child(15){width:15ch;} /* PERMIS*/
 
-    /* Masquer VILLE (colonne 13) */
+    /* Masque VILLE (col 13) en permanence */
     #defaultTableContainer th:nth-child(13),
     #defaultTableContainer td:nth-child(13){display:none;}
+
+    /* Masque FIRME + MATRICULE si le client ne possède pas "Compagnie" */
+    body.no-comp #defaultTableContainer th:nth-child(2),
+    body.no-comp #defaultTableContainer td:nth-child(2),
+    body.no-comp #defaultTableContainer th:nth-child(3),
+    body.no-comp #defaultTableContainer td:nth-child(3){display:none;}
 
     .button-container{display:flex;justify-content:flex-end;align-items:center;margin-top:10px;gap:10px;}
     button{padding:10px 15px;border:none;border-radius:4px;background:#4CAF50;color:#fff;cursor:pointer;}
@@ -81,7 +86,7 @@
     .error{border:2px solid red !important;background:#fdd;}
   </style>
 </head>
-<body>
+<body class="no-comp">
 
   <!-- ======================= LOGIN ======================= -->
   <div id="login-page">
@@ -119,7 +124,6 @@
     <!-- Formulaire -->
     <div class="section">
       <form id="data-form">
-        <!-- Tableau unique -->
         <div class="table-container" id="defaultTableContainer">
           <table>
             <thead>
@@ -147,12 +151,11 @@
   <!-- ======================= SCRIPT ======================= -->
   <script>
     /*****************************************************************
-     *            1) LOGIN  (Entrée ou Clic)
+     *            1) LOGIN
      *****************************************************************/
     const pwdInput = document.getElementById("password");
     const loginBtn = document.getElementById("loginButton");
-
-    pwdInput.addEventListener("keyup",   e=>{ if(e.key==="Enter") tryLogin(); });
+    pwdInput.addEventListener("keyup", e=>{ if(e.key==="Enter") tryLogin(); });
     loginBtn.addEventListener("click",  tryLogin);
 
     function tryLogin(){
@@ -175,7 +178,7 @@
     let defaultRowCount=10;
 
     /*****************************************************************
-     *            3) CHARGEMENT / LISTE DES CLIENTS
+     *            3) CHARGEMENT / LISTE CLIENTS
      *****************************************************************/
     function parseClientCSV(csv){
       const lines = csv.split(/\r?\n/);
@@ -207,23 +210,27 @@
     }
 
     /*****************************************************************
-     *            4) SÉLECTION / DÉSÉLECTION CLIENT
+     *            4) SÉLECTION CLIENT
      *****************************************************************/
+    function toggleFirmeCols(show){
+      document.body.classList.toggle("no-comp", !show);
+    }
     document.getElementById("clientInput").addEventListener("change",e=>{
       const parts=e.target.value.split(" - ");
       if(parts.length){
         const num=parts[0].trim();
         selectedClient=clients[num]||null;
         updateEmploiOptions();
+        toggleFirmeCols(selectedClient && selectedClient.emplois.includes("Compagnie"));
       }
     });
     document.getElementById("clearClient").addEventListener("click",()=>{
       document.getElementById("clientInput").value=""; selectedClient=null;
-      updateEmploiOptions();
+      updateEmploiOptions(); toggleFirmeCols(false);
     });
 
     /*****************************************************************
-     *            5) GESTION DES EMPLOIS (conserve la sélection)
+     *            5) GESTION LISTE EMPLOIS
      *****************************************************************/
     function updateEmploiOptions(){
       const sels=document.querySelectorAll("select[name^='row'][name$='_emploi']");
@@ -237,7 +244,7 @@
     }
 
     /*****************************************************************
-     *            6) GÉNÉRATION DES TABLEAUX
+     *            6) GÉNÉRATION TABLE
      *****************************************************************/
     const moisOptions=`<option value=""></option>
         <option value="01- JANVIER">01- JANVIER</option>
@@ -257,7 +264,6 @@
       for(let d=1;d<=31;d++){const day=String(d).padStart(2,"0");s+=`<option value="${day}">${day}</option>`;}
       return s;
     };
-
     function defaultRow(i){
       return `
       <tr>
@@ -287,7 +293,6 @@
       defaultRowCount=count; const tb=document.querySelector("#defaultTableContainer tbody");
       tb.innerHTML=""; for(let i=0;i<count;i++) tb.insertAdjacentHTML("beforeend",defaultRow(i));
     }
-    /* génération initiale */
     generateDefaultRows();
 
     /*****************************************************************
@@ -300,33 +305,31 @@
     });
 
     /*****************************************************************
-     *            8) FORMATAGE CODE POSTAL  🇨🇦  + MAJUSCULES
+     *            8) FORMATAGE CP + MAJUSCULES
      *****************************************************************/
     document.addEventListener("input",e=>{
       if(e.target && e.target.name && e.target.name.endsWith("_code_postal")){
-        let v=e.target.value.toUpperCase().replace(/\s+/g,"");   // enlève espaces
-        if(v.length>3) v=v.slice(0,3)+" "+v.slice(3);            // insère espace
-        e.target.value=v.slice(0,7);                             // max 7
+        let v=e.target.value.toUpperCase().replace(/\s+/g,"");
+        if(v.length>3) v=v.slice(0,3)+" "+v.slice(3);
+        e.target.value=v.slice(0,7);
       }
-      /* force majuscules tous les inputs texte */
       if(e.target && e.target.tagName==="INPUT" && e.target.type==="text"){
         e.target.value=e.target.value.toUpperCase();
       }
     });
 
     /*****************************************************************
-     *            9) EXPORT CSV (validation complète)
+     *            9) EXPORT CSV
      *****************************************************************/
     function clearErrors(){document.querySelectorAll(".error").forEach(el=>el.classList.remove("error"));}
     document.getElementById("saveButton").addEventListener("click",()=>{
       clearErrors();
-      let csvContent="", rows=[];
-      let hasComp=false;
+      let csvContent="", rows=[], hasComp=false;
       const now=new Date(), pad=n=>String(n).padStart(2,"0");
       const ts=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-
       const tb=document.querySelector("#defaultTableContainer tbody");
       let valid=true;
+
       for(let i=0;i<tb.rows.length;i++){
         const r={
           ref          :document.getElementsByName(`row${i}_ref`)[0].value.trim(),
@@ -346,34 +349,38 @@
           numero_permis:document.getElementsByName(`row${i}_numero_permis`)[0].value.trim(),
           notes        :document.getElementsByName(`row${i}_notes`)[0].value.trim()
         };
-        if(Object.values(r).every(v=>v==="")) continue;   // skip lignes vides
+        if(Object.values(r).every(v=>v==="")) continue;   // ligne vide
 
-        /* Champs obligatoires */
-        const markError=(name)=>{document.getElementsByName(name)[0].classList.add("error");valid=false;};
-        if(!r.nom)   markError(`row${i}_nom`);
-        if(!r.prenom)markError(`row${i}_prenom`);
-        if(!r.sexe)  markError(`row${i}_sexe`);
-        if(!r.annee) markError(`row${i}_annee`);
-        if(!r.mois)  markError(`row${i}_mois`);
-        if(!r.jour)  markError(`row${i}_jour`);
-        if(!r.emploi)markError(`row${i}_emploi`);
+        const markError=name=>{document.getElementsByName(name)[0].classList.add("error");valid=false;};
 
-        /* Permis max 15 caractères */
+        if(r.emploi.toUpperCase()==="COMPAGNIE"){
+          hasComp=true;
+          if(!r.firme)   markError(`row${i}_firme`);
+          if(!r.adresse) markError(`row${i}_adresse`);
+        }else{
+          if(!r.nom)   markError(`row${i}_nom`);
+          if(!r.prenom)markError(`row${i}_prenom`);
+          if(!r.sexe)  markError(`row${i}_sexe`);
+          if(!r.annee) markError(`row${i}_annee`);
+          if(!r.mois)  markError(`row${i}_mois`);
+          if(!r.jour)  markError(`row${i}_jour`);
+          if(!r.emploi)markError(`row${i}_emploi`);
+        }
+
         if(r.numero_permis && r.numero_permis.length>15){
           document.getElementsByName(`row${i}_numero_permis`)[0].classList.add("error");
           alert("Erreur : Le numéro du permis ne peut dépasser 15 caractères.");
           return;
         }
 
-        /* Vérif / format CP déjà en majuscules. On tolère vide ou XXX XXX */
         let cp=r.code_postal.toUpperCase().replace(/\s+/g,"");
         if(cp.length===6) cp=cp.slice(0,3)+" "+cp.slice(3);
         r.code_postal=cp;
         if(!(cp==="" || (cp.length===7 && cp.charAt(3)===" "))) r.code_postal="";
 
-        /* Date de naissance & age (16-100) */
+        /* DDN et âge uniquement si ce n’est PAS une compagnie */
         let ddn="";
-        if(r.annee && r.mois && r.jour){
+        if(r.emploi.toUpperCase()!=="COMPAGNIE" && r.annee && r.mois && r.jour){
           const moNbr=parseInt(r.mois.substr(0,2));
           ddn=`${r.annee}-${("0"+moNbr).slice(-2)}-${r.jour}`;
           const birth=new Date(parseInt(r.annee),moNbr-1,parseInt(r.jour));
@@ -390,13 +397,12 @@
         r.ddn=ddn;
         r.nom   =r.nom.toUpperCase();
         r.prenom=r.prenom.toUpperCase();
-        if(r.emploi.toUpperCase()==="COMPAGNIE") hasComp=true;
         rows.push(r);
       }
       if(!valid){alert("Veuillez remplir les champs obligatoires.");return;}
       if(rows.length===0){alert("Aucune donnée saisie.");return;}
 
-      /* ---------- GÉNÉRATION CSV ---------- */
+      /* ---------- CSV ---------- */
       if(hasComp){
         const headers=["NUMERO_REFERENCE","FIRME","MATRICULE_FIRME","NOM","PRENOM","SEXE","DDN","EMPLOI","ADRESSE","APP","VILLE","CODE_POSTAL","NUMERO_PERMIS","NOTES"];
         csvContent=headers.join(";")+"\n";
@@ -426,7 +432,7 @@
     });
 
     /*****************************************************************
-     *            10) RÉINITIALISATION & BOUTONS NB LIGNES
+     *            10) RESET & NB LIGNES
      *****************************************************************/
     document.getElementById("resetButton").addEventListener("click",()=>{
       document.getElementById("data-form").reset(); clearErrors();
