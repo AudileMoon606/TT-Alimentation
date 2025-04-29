@@ -239,6 +239,8 @@
         const add=v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);};
         add("");
         if(selectedClient && selectedClient.emplois.length) selectedClient.emplois.forEach(add);
+        /* Toujours proposer "Compagnie" */
+        if(![...sel.options].some(o=>o.value==="Compagnie")) add("Compagnie");
         if([...sel.options].some(o=>o.value===current)) sel.value=current;
       });
     }
@@ -281,7 +283,7 @@
         <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width:60px;" required></td>
         <td><select name="row${i}_mois"  required>${moisOptions}</select></td>
         <td><select name="row${i}_jour"  required>${mkJourOptions()}</select></td>
-        <td><select name="row${i}_emploi" required><option value=""></option></select></td>
+        <td><select name="row${i}_emploi" required><option value=""></option><option value="Compagnie">Compagnie</option></select></td>
         <td><input type="text" name="row${i}_adresse"></td>
         <td><input type="text" name="row${i}_app" style="width:60px;"></td>
         <td><input type="text" name="row${i}_ville"></td>
@@ -305,9 +307,10 @@
     });
 
     /*****************************************************************
-     *            8) FORMATAGE CP + MAJUSCULES
+     *            8) FORMATAGE CP + MAJUSCULES + LOGIQUE FIRME/COMPAGNIE
      *****************************************************************/
     document.addEventListener("input",e=>{
+      /* 8-a) Formatage code postal + majuscules */
       if(e.target && e.target.name && e.target.name.endsWith("_code_postal")){
         let v=e.target.value.toUpperCase().replace(/\s+/g,"");
         if(v.length>3) v=v.slice(0,3)+" "+v.slice(3);
@@ -316,12 +319,48 @@
       if(e.target && e.target.tagName==="INPUT" && e.target.type==="text"){
         e.target.value=e.target.value.toUpperCase();
       }
+
+      /* 8-b) Détection saisie FIRME  → mode Compagnie */
+      if(e.target && e.target.name && /^row\d+_firme$/.test(e.target.name)){
+        handleFirmeInput(e.target);
+      }
     });
+
+    /* Gère le grisage / dégrissage + emploi Compagnie */
+    function handleFirmeInput(firmeInput){
+      const m=firmeInput.name.match(/^row(\d+)_firme$/);
+      if(!m) return;
+      const i=m[1];
+      const isComp = firmeInput.value.trim() !== "";
+      const nom   = document.getElementsByName(`row${i}_nom`)[0];
+      const prenom= document.getElementsByName(`row${i}_prenom`)[0];
+      const annee = document.getElementsByName(`row${i}_annee`)[0];
+      const mois  = document.getElementsByName(`row${i}_mois`)[0];
+      const jour  = document.getElementsByName(`row${i}_jour`)[0];
+      const sexe  = document.getElementsByName(`row${i}_sexe`)[0];
+      const emploi= document.getElementsByName(`row${i}_emploi`)[0];
+
+      const toggle=(el)=>{ el.disabled=isComp; if(isComp){el.value="";} };
+      [nom,prenom,annee,mois,jour,sexe].forEach(toggle);
+
+      if(isComp){
+        /* Ajoute l’option Compagnie si absente */
+        if(![...emploi.options].some(o=>o.value==="Compagnie")){
+          const opt=document.createElement("option");
+          opt.value="Compagnie"; opt.textContent="Compagnie";
+          emploi.appendChild(opt);
+        }
+        emploi.value="Compagnie";
+      }else{
+        if(emploi.value==="Compagnie") emploi.value="";
+      }
+    }
 
     /*****************************************************************
      *            9) EXPORT CSV
      *****************************************************************/
     function clearErrors(){document.querySelectorAll(".error").forEach(el=>el.classList.remove("error"));}
+
     document.getElementById("saveButton").addEventListener("click",()=>{
       clearErrors();
       let csvContent="", rows=[], hasComp=false;
