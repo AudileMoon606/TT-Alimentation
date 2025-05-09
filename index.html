@@ -2,70 +2,64 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Outil TT Alimentation - Login</title>
+  <title>Outil TT Alimentation</title>
   <style>
-    /* =========================
-       STYLES GLOBAUX / LOGIN
-    ========================= */
     body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f7f7f7;color:#333;}
-    #login-page{
-      position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;
+    #login-page{position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      z-index:1000;opacity:1;transition:opacity 1s ease;
-    }
+      z-index:1000;opacity:1;transition:opacity 1s ease;}
     #login-page.fade-out{opacity:0;}
-    #login-page .login-container{
-      text-align:center;border:1px solid #ccc;padding:30px;border-radius:8px;
-      box-shadow:0 2px 6px rgba(0,0,0,.2);background:#fff;
-    }
+    #login-page .login-container{ text-align:center;border:1px solid #ccc;
+      padding:30px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.2);background:#fff;}
     #login-page img{max-height:80px;margin-bottom:20px;}
-    #login-page input[type=password]{
-      padding:10px;font-size:16px;width:250px;border:1px solid #ccc;
-      border-radius:4px;margin-bottom:20px;
-    }
-    #login-page button{
-      padding:10px 20px;font-size:16px;border:none;border-radius:4px;
-      background:#4CAF50;color:#fff;cursor:pointer;
-    }
+    #login-page input[type=password]{padding:10px;font-size:16px;width:250px;
+      border:1px solid #ccc;border-radius:4px;margin-bottom:20px;}
+    #login-page button{padding:10px 20px;font-size:16px;border:none;
+      border-radius:4px;background:#4CAF50;color:#fff;cursor:pointer;}
 
-    /* =========================
-       INTERFACE PRINCIPALE
-    ========================= */
     #main-page{display:none;padding:20px;max-width:1900px;margin:auto;}
     .header-container{display:flex;align-items:center;margin-bottom:20px;}
     .header-logo{max-height:60px;margin-right:10px;}
     .header-title{font-size:32px;margin:0;}
 
-    .section{
-      margin-bottom:20px;background:#fff;padding:15px;border-radius:6px;
-      box-shadow:0 2px 4px rgba(0,0,0,.1);
-    }
+    .section{margin-bottom:20px;background:#fff;padding:15px;border-radius:6px;
+      box-shadow:0 2px 4px rgba(0,0,0,.1);}
     label{display:block;margin-bottom:5px;font-weight:bold;}
-    input[type=text],select{
-      padding:6px;margin-bottom:10px;box-sizing:border-box;
-      border:1px solid #ccc;border-radius:4px;
-    }
+    input[type=text],select{padding:6px;margin-bottom:10px;box-sizing:border-box;
+      border:1px solid #ccc;border-radius:4px;}
     input[type=text]{text-transform:uppercase;}
 
-    /* Masquages dynamiques par mode */
-    .comp-only    { display: table-cell; } /* visible sauf si .no-comp ou .family-mode */
-    .reg-only     { display: table-cell; } /* visible en mode régulier et compagnie */
-    .fam-only     { display: none;       } /* visible en mode familial seulement */
-    body.no-comp .comp-only,
-    body.family-mode .comp-only { display: none; }
-    body.family-mode .reg-only  { display: none; }
-    body.family-mode .fam-only  { display: table-cell; }
+    /* Désélection client en rouge */
+    #clearClient{background:#f44336;color:#fff;}
 
-    /* Masque VILLE (col 18) en permanence */
-    #defaultTableContainer th:nth-child(18),
-    #defaultTableContainer td:nth-child(18){ display:none; }
+    /* Client section layout */
+    #clientSelection{display:flex;align-items:flex-start;gap:5px;margin-bottom:10px;}
+    .client-info{flex:1;}
+    .client-buttons{
+      display:flex;gap:5px;
+      margin-left:auto; /* pousse à droite */
+    }
+
+    /* Masquages dynamiques */
+    .comp-only{display:table-cell;}
+    .reg-only{display:table-cell;}
+    .fam-only{display:none;}
+    body.no-comp .comp-only,
+    body.family-mode .comp-only{display:none;}
+    body.family-mode .reg-only{display:none;}
+    body.family-mode .fam-only{display:table-cell;}
 
     .table-container{overflow-x:auto;}
     table{width:100%;border-collapse:collapse;background:#fff;}
     th,td{border:1px solid #ddd;padding:8px;text-align:left;}
 
-    .button-container{display:flex;justify-content:flex-end;align-items:center;margin-top:10px;gap:10px;}
-    button{padding:10px 15px;border:none;border-radius:4px;background:#4CAF50;color:#fff;cursor:pointer;}
+    #defaultTableContainer th:nth-child(18),
+    #defaultTableContainer td:nth-child(18){display:none;}
+
+    .button-container{display:flex;justify-content:flex-end;align-items:center;
+      margin-top:10px;gap:10px;}
+    button{padding:10px 15px;border:none;border-radius:4px;
+      background:#4CAF50;color:#fff;cursor:pointer;}
     #addRow{background:blue;}
     #resetButton{background:#f44336;}
     .error{border:2px solid red !important;background:#fdd;}
@@ -73,36 +67,35 @@
 </head>
 <body class="no-comp">
 
-  <!-- ======================= LOGIN ======================= -->
+  <!-- LOGIN -->
   <div id="login-page">
     <div class="login-container">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo">
       <h2>Bienvenue</h2>
-      <input type="password" id="password" placeholder="Mot de passe">
-      <br>
+      <input type="password" id="password" placeholder="Mot de passe"><br>
       <button id="loginButton">Se connecter</button>
     </div>
   </div>
 
-  <!-- ======================= INTERFACE ==================== -->
+  <!-- INTERFACE PRINCIPALE -->
   <div id="main-page">
     <div class="header-container">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo" class="header-logo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" class="header-logo">
       <h1 class="header-title">Outil TT Alimentation</h1>
     </div>
 
     <!-- Sélection client -->
     <div class="section" id="clientSelection">
       <div class="client-info">
-        <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
-        <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
+        <label for="clientInput">Sélectionner le client :</label>
+        <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - ...">
         <datalist id="clientList"></datalist>
         <button type="button" id="clearClient">Désélectionner le client</button>
       </div>
       <div class="client-buttons">
-        <button type="button" id="set1Row">1&nbsp;ligne</button>
-        <button type="button" id="set5Rows">5&nbsp;lignes</button>
-        <button type="button" id="set10Rows">10&nbsp;lignes</button>
+        <button type="button" id="set1Row">1 ligne</button>
+        <button type="button" id="set5Rows">5 lignes</button>
+        <button type="button" id="set10Rows">10 lignes</button>
       </div>
     </div>
 
@@ -123,24 +116,15 @@
                 <th class="fam-only">PRENOM1</th>
                 <th class="fam-only">PRENOM2</th>
                 <th>SEXE</th>
-                <th>ANNÉE</th>
-                <th>MOIS</th>
-                <th>JOUR</th>
+                <th>ANNÉE</th><th>MOIS</th><th>JOUR</th>
                 <th class="fam-only">LIEN_FAMILIAL</th>
-                <th>EMPLOI</th>
-                <th>ADRESSE</th>
-                <th class="fam-only">VILLE</th><!-- cachée par CSS -->
-                <th>APP</th>
-                <th>CODE_POSTAL</th>
-                <th>PERMIS</th>
-                <th>NOTES</th>
+                <th>EMPLOI</th><th>ADRESSE</th>
+                <th>APP</th><th>CODE_POSTAL</th><th>PERMIS</th><th>NOTES</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
-
-        <!-- Boutons -->
         <div class="button-container">
           <button type="button" id="addRow">Ajouter ligne</button>
           <button type="reset"  id="resetButton">Effacer tout</button>
@@ -150,50 +134,35 @@
     </div>
   </div>
 
-  <!-- ======================= SCRIPT ======================= -->
   <script>
-    /*****************************************
-     *  DÉFINITIONS GLOBALES ET OPTIONS
-     *****************************************/
-    const lienOptions = [
-      "","Candidat","Père","Mère","Frère","Soeur","Beau-père","Belle-mère",
+    // Options de lien familial
+    const lienOptions = ["","Candidat","Père","Mère","Frère","Soeur","Beau-père","Belle-mère",
       "Beau-frère","Belle-soeur","Conjoint","Coloc","Beau-fils","Belle-fille",
-      "Parenté","Ex-Parenté","Ex-conjoint","Fille","Fils","Autre"
-    ].map(v=>`<option value="${v}">${v}</option>`).join("");
+      "Parenté","Ex-Parenté","Ex-conjoint","Fille","Fils","Autre"]
+      .map(v=>`<option value="${v}">${v}</option>`).join("");
 
     const moisOptions = `<option value=""></option>
-      <option value="01- JANVIER">01- JANVIER</option>
-      <option value="02- FÉVRIER">02- FÉVRIER</option>
-      <option value="03- MARS">03- MARS</option>
-      <option value="04- AVRIL">04- AVRIL</option>
-      <option value="05- MAI">05- MAI</option>
-      <option value="06- JUIN">06- JUIN</option>
-      <option value="07- JUILLET">07- JUILLET</option>
-      <option value="08- AOÛT">08- AOÛT</option>
-      <option value="09- SEPTEMBRE">09- SEPTEMBRE</option>
-      <option value="10- OCTOBRE">10- OCTOBRE</option>
-      <option value="11- NOVEMBRE">11- NOVEMBRE</option>
-      <option value="12- DÉCEMBRE">12- DÉCEMBRE</option>`;
+      ${["JANVIER","FÉVRIER","MARS","AVRIL","MAI","JUIN",
+         "JUILLET","AOÛT","SEPTEMBRE","OCTOBRE","NOVEMBRE","DÉCEMBRE"]
+         .map((m,i)=>`<option value="${String(i+1).padStart(2,"0")}-${m}">`+
+                     `${String(i+1).padStart(2,"0")}-${m}</option>`).join("")}`;
 
     const mkJourOptions = ()=> {
       let s = '<option value=""></option>';
-      for(let d=1; d<=31; d++) {
+      for(let d=1; d<=31; d++){
         const day = String(d).padStart(2,"0");
         s += `<option value="${day}">${day}</option>`;
       }
       return s;
     };
 
-    let clients = {}, selectedClient = null, defaultRowCount = 10;
+    let clients={}, selectedClient=null, defaultRowCount=10;
 
-    /*****************************************
-     *  1) LOGIN
-     *****************************************/
-    const pwdInput = document.getElementById("password");
-    const loginBtn  = document.getElementById("loginButton");
-    pwdInput.addEventListener("keyup", e=>{ if(e.key==="Enter") tryLogin(); });
+    // 1) LOGIN
+    const pwdInput = document.getElementById("password"),
+          loginBtn = document.getElementById("loginButton");
+    pwdInput.addEventListener("keyup", e=> e.key==="Enter"&&tryLogin());
     loginBtn.addEventListener("click", tryLogin);
-
     function tryLogin(){
       if(pwdInput.value==="Alim7420"){
         document.getElementById("login-page").classList.add("fade-out");
@@ -202,139 +171,103 @@
           document.getElementById("main-page").style.display="block";
           fetch("fichier_client(in).csv")
             .then(r=>r.text()).then(parseClientCSV)
-            .catch(err=>console.error("Erreur CSV client :",err));
-        }, 1000);
-      } else {
-        alert("Mot de passe incorrect.");
-      }
+            .catch(e=>console.error(e));
+        },1000);
+      } else alert("Mot de passe incorrect.");
     }
 
-    /*****************************************
-     *  2) PARSING & DATASOURCE CLIENTS
-     *****************************************/
+    // 2) PARSING CLIENTS
     function parseClientCSV(csv){
-      const lines = csv.split(/\r?\n/);
+      const lines=csv.split(/\r?\n/);
       if(lines.length<2) return;
-      const headers = lines[0].split(";");
-      const idxClient = headers.indexOf("Client");
-      const idxName   = headers.indexOf("Nom client");
-      const idxEmp    = idxName + 1;
-
-      for(let i=1; i<lines.length; i++){
+      const h=lines[0].split(";"), ic=h.indexOf("Client"), iname=h.indexOf("Nom client");
+      for(let i=1;i<lines.length;i++){
         if(!lines[i].trim()) continue;
-        const f = lines[i].split(";");
-        const num  = f[idxClient].trim();
-        const name = f[idxName].trim();
-        const set  = new Set();
-        for(let j=idxEmp; j<f.length; j++){
-          f[j].split("!#!").forEach(e=>{ if(e.trim()) set.add(e.trim()); });
+        const f=lines[i].split(";"), num=f[ic].trim(), name=f[iname].trim();
+        const set=new Set();
+        for(let j=iname+1;j<f.length;j++){
+          f[j].split("!#!").forEach(e=>e.trim()&&set.add(e.trim()));
         }
-        clients[num] = { number: num, name, emplois: [...set].sort() };
+        clients[num]={number:num,name,emplois:[...set].sort()};
       }
-      populateClientDatalist();
-    }
-    function populateClientDatalist(){
-      const dl = document.getElementById("clientList"); dl.innerHTML="";
-      for(const n in clients){
-        const o = document.createElement("option");
-        o.value = `${n} - ${clients[n].name}`; dl.appendChild(o);
+      const dl=document.getElementById("clientList"); dl.innerHTML="";
+      for(const num in clients){
+        const o=document.createElement("option");
+        o.value=`${num} - ${clients[num].name}`;
+        dl.appendChild(o);
       }
     }
 
-    /*****************************************
-     *  3) GESTION DU MODE (régulier / compagnie / familial)
-     *****************************************/
+    // 3) MODE (compagnie/famille/normal)
     function updateMode(){
-      const hasCompany = selectedClient && selectedClient.emplois.includes("Compagnie");
+      const hasCompany = selectedClient?.emplois.includes("Compagnie");
       const hasFamily  = selectedClient && (
         selectedClient.emplois.includes("Famille") ||
         selectedClient.emplois.includes("Famille Ext Canada")
       );
-      document.body.classList.toggle("no-comp", !hasCompany || hasFamily);
-      document.body.classList.toggle("family-mode", hasFamily);
-      // Regénère les lignes dans le nouveau mode
-      generateDefaultRows(defaultRowCount);
-      updateEmploiOptions();
+      document.body.classList.toggle("no-comp",!hasCompany||hasFamily);
+      document.body.classList.toggle("family-mode",hasFamily);
+      // on ne régénère plus tout : on ajuste juste l'existant
     }
-
-    document.getElementById("clientInput").addEventListener("change", e=>{
-      const parts = e.target.value.split(" - ");
-      if(parts.length){
-        const num = parts[0].trim();
-        selectedClient = clients[num]||null;
-      }
+    document.getElementById("clientInput").addEventListener("change",e=>{
+      const parts=e.target.value.split(" - ");
+      selectedClient=clients[parts[0]]||null;
       updateMode();
     });
-    document.getElementById("clearClient").addEventListener("click", ()=>{
+    document.getElementById("clearClient").addEventListener("click",()=>{
       document.getElementById("clientInput").value="";
-      selectedClient = null;
+      selectedClient=null;
       updateMode();
     });
 
-    /*****************************************
-     *  4) MISE À JOUR DES OPTIONS « EMPLOI »
-     *****************************************/
+    // 4) UPDATE EMPLOIS
     function updateEmploiOptions(){
-      const sels = document.querySelectorAll("select[name$='_emploi']");
-      sels.forEach(sel=>{
-        const current = sel.value;
-        sel.innerHTML = `<option value=""></option>`;
-        if(selectedClient){
-          selectedClient.emplois.forEach(v=>{
-            sel.insertAdjacentHTML("beforeend", `<option value="${v}">${v}</option>`);
-          });
-        }
-        // Toujours proposer Compagnie
+      document.querySelectorAll("select[name$='_emploi']").forEach(sel=>{
+        const cur=sel.value; sel.innerHTML=`<option value=""></option>`;
+        selectedClient?.emplois.forEach(v=>{
+          sel.insertAdjacentHTML("beforeend",
+            `<option value="${v}">${v}</option>`);
+        });
         if(![...sel.options].some(o=>o.value==="Compagnie")){
-          sel.insertAdjacentHTML("beforeend", `<option value="Compagnie">Compagnie</option>`);
+          sel.insertAdjacentHTML("beforeend",
+            `<option value="Compagnie">Compagnie</option>`);
         }
-        sel.value = current;
+        sel.value=cur;
       });
     }
 
-    /*****************************************
-     *  5) TEMPLATE DE LIGNE UNIQUE
-     *****************************************/
+    // 5) ROW TEMPLATE
     function defaultRow(i){
-      return `
-      <tr>
+      return `<tr>
         <td><input type="text" name="row${i}_ref"></td>
         <td class="comp-only"><input type="text" name="row${i}_firme"></td>
         <td class="comp-only"><input type="text" name="row${i}_matricule"></td>
 
-        <td class="reg-only"><input type="text" name="row${i}_nom" required></td>
-        <td class="fam-only"><input type="text" name="row${i}_nom1" required></td>
+        <td class="reg-only"><input type="text" name="row${i}_nom"></td>
+        <td class="fam-only"><input type="text" name="row${i}_nom1"></td>
         <td class="fam-only"><input type="text" name="row${i}_nom2"></td>
 
-        <td class="reg-only"><input type="text" name="row${i}_prenom" required></td>
-        <td class="fam-only"><input type="text" name="row${i}_prenom1" required></td>
+        <td class="reg-only"><input type="text" name="row${i}_prenom"></td>
+        <td class="fam-only"><input type="text" name="row${i}_prenom1"></td>
         <td class="fam-only"><input type="text" name="row${i}_prenom2"></td>
 
-        <td>
-          <select name="row${i}_sexe" required>
-            <option value=""></option>
-            <option value="M">M</option>
-            <option value="F">F</option>
-            <option value="X">X</option>
-          </select>
-        </td>
-        <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width:60px;" required></td>
-        <td><select name="row${i}_mois"    required>${moisOptions}</select></td>
-        <td><select name="row${i}_jour"    required>${mkJourOptions()}</select></td>
+        <td><select name="row${i}_sexe">
+          <option value=""></option>
+          <option value="M">M</option><option value="F">F</option><option value="X">X</option>
+        </select></td>
 
-        <td class="fam-only">
-          <select name="row${i}_lien_familial" required>
-            ${lienOptions}
-          </select>
-        </td>
+        <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width:60px;"></td>
+        <td><select name="row${i}_mois">${moisOptions}</select></td>
+        <td><select name="row${i}_jour">${mkJourOptions()}</select></td>
 
-        <td><select name="row${i}_emploi" required>
+        <td class="fam-only"><select name="row${i}_lien_familial">${lienOptions}</select></td>
+
+        <td><select name="row${i}_emploi">
           <option value=""></option>
           <option value="Compagnie">Compagnie</option>
         </select></td>
 
         <td><input type="text" name="row${i}_adresse"></td>
-        <td class="fam-only"><!-- VILLE cachée toujours --><input type="text" name="row${i}_ville"></td>
         <td><input type="text" name="row${i}_app" style="width:60px;"></td>
         <td><input type="text" name="row${i}_code_postal" style="width:80px;"></td>
         <td><input type="text" name="row${i}_numero_permis" style="width:15ch;"></td>
@@ -342,250 +275,197 @@
       </tr>`;
     }
 
-    function generateDefaultRows(count=10){
-      defaultRowCount = count;
-      const tb = document.querySelector("#defaultTableContainer tbody");
-      tb.innerHTML = "";
-      for(let i=0; i<count; i++){
-        tb.insertAdjacentHTML("beforeend", defaultRow(i));
-      }
+    // 6) INITIALISATION
+    const tbody=document.querySelector("#defaultTableContainer tbody");
+    function initRows(n){
+      defaultRowCount=n;
+      tbody.innerHTML="";
+      for(let i=0;i<n;i++) tbody.insertAdjacentHTML("beforeend",defaultRow(i));
       updateEmploiOptions();
     }
-    generateDefaultRows();
+    initRows(defaultRowCount);
 
-    /*****************************************
-     *  6) AJOUTER UNE LIGNE
-     *****************************************/
-    document.getElementById("addRow").addEventListener("click", ()=>{
-      const tb = document.querySelector("#defaultTableContainer tbody");
-      const i  = tb.rows.length;
-      tb.insertAdjacentHTML("beforeend", defaultRow(i));
+    // 7) ADD ROW
+    document.getElementById("addRow").addEventListener("click",()=>{
+      const i=tbody.rows.length;
+      tbody.insertAdjacentHTML("beforeend",defaultRow(i));
       updateEmploiOptions();
     });
 
-    /*****************************************
-     *  7) FORMATAGE & MAJUSCULE
-     *****************************************/
-    document.addEventListener("input", e=>{
-      // Code postal
+    // 8) BUTTONS 1/5/10 LIGNES (sans effacer)
+    function setRows(n){
+      const cur=tbody.rows.length;
+      if(n>cur){
+        for(let i=cur;i<n;i++){
+          tbody.insertAdjacentHTML("beforeend",defaultRow(i));
+        }
+        updateEmploiOptions();
+      } else if(n<cur){
+        for(let i=cur-1;i>=n;i--){
+          tbody.deleteRow(i);
+        }
+      }
+      defaultRowCount=n;
+    }
+    document.getElementById("set1Row").addEventListener("click",()=>setRows(1));
+    document.getElementById("set5Rows").addEventListener("click",()=>setRows(5));
+    document.getElementById("set10Rows").addEventListener("click",()=>setRows(10));
+
+    // 9) FORMAT / MAJUSCULE / DÉTECTION COMPAGNIE
+    document.addEventListener("input",e=>{
       if(e.target.name?.endsWith("_code_postal")){
-        let v = e.target.value.toUpperCase().replace(/\s+/g,"");
-        if(v.length>3) v = v.slice(0,3)+" "+v.slice(3);
-        e.target.value = v.slice(0,7);
+        let v=e.target.value.toUpperCase().replace(/\s+/g,"");
+        if(v.length>3) v=v.slice(0,3)+" "+v.slice(3);
+        e.target.value=v.slice(0,7);
       }
-      // Texte en majuscules (inputs only)
       if(e.target.tagName==="INPUT" && e.target.type==="text"){
-        e.target.value = e.target.value.toUpperCase();
+        e.target.value=e.target.value.toUpperCase();
       }
-      // Compagnie forcé si nom de firme saisi
-      if(e.target.name && /^row\d+_firme$/.test(e.target.name)){
-        const m = e.target.name.match(/^row(\d+)_firme$/);
-        if(!m) return;
-        const i        = m[1];
-        const isComp   = !!e.target.value.trim();
-        const fields   = ["nom","prenom","annee","mois","jour","sexe"]
-                       .map(f=>document.getElementsByName(`row${i}_${f}`)[0]);
-        fields.forEach(el=>{
-          el.disabled = isComp;
-          if(isComp) el.value = "";
+      if(/^row\d+_firme$/.test(e.target.name)){
+        const idx=+e.target.name.match(/^row(\d+)_/)[1];
+        const isC=!!e.target.value.trim();
+        ["nom","prenom","annee","mois","jour","sexe"].forEach(f=>{
+          const el=document.getElementsByName(`row${idx}_${f}`)[0];
+          el.disabled=isC;
+          if(isC) el.value="";
         });
-        const emploi = document.getElementsByName(`row${i}_emploi`)[0];
-        if(isComp){
-          if(![...emploi.options].some(o=>o.value==="Compagnie")){
-            emploi.insertAdjacentHTML("beforeend",
+        const emp=document.getElementsByName(`row${idx}_emploi`)[0];
+        if(isC){
+          if(![...emp.options].some(o=>o.value==="Compagnie")){
+            emp.insertAdjacentHTML("beforeend",
               `<option value="Compagnie">Compagnie</option>`);
           }
-          emploi.value = "Compagnie";
-        } else if(emploi.value==="Compagnie"){
-          emploi.value = "";
+          emp.value="Compagnie";
+        } else if(emp.value==="Compagnie"){
+          emp.value="";
         }
       }
     });
 
-    /*****************************************
-     *  8) EXPORT CSV SELON MODE
-     *****************************************/
+    // 10) EXPORT CSV AVEC VALIDATION PAR LIGNE
     function clearErrors(){
       document.querySelectorAll(".error").forEach(el=>el.classList.remove("error"));
     }
-
-    document.getElementById("saveButton").addEventListener("click", ()=>{
+    document.getElementById("saveButton").addEventListener("click",()=>{
       clearErrors();
-      const tb = document.querySelector("#defaultTableContainer tbody");
-      const rows = [];
-      let valid = true, hasComp = false, hasFamily = false;
+      const rowsData=[], now=new Date(), pad=n=>String(n).padStart(2,"0");
+      const ts=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_`+
+               `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+      let valid=true;
 
-      // Timestamp
-      const now = new Date(), pad = n=>String(n).padStart(2,"0");
-      const ts  = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_` +
-                  `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-
-      for(let i=0; i<tb.rows.length; i++){
-        const get = n=>document.getElementsByName(`row${i}_${n}`)[0]?.value.trim()||"";
-        const r = {
-          ref           : get("ref"),
-          firme         : get("firme"),
-          matricule     : get("matricule"),
-          nom           : get("nom"),
-          prenom        : get("prenom"),
-          nom1          : get("nom1"),
-          nom2          : get("nom2"),
-          prenom1       : get("prenom1"),
-          prenom2       : get("prenom2"),
-          sexe          : get("sexe"),
-          annee         : get("annee"),
-          mois          : get("mois"),
-          jour          : get("jour"),
-          lien_familial : get("lien_familial"),
-          emploi        : get("emploi"),
-          adresse       : get("adresse"),
-          app           : get("app"),
-          code_postal   : get("code_postal"),
-          numero_permis : get("numero_permis"),
-          notes         : get("notes")
+      for(let i=0;i<tbody.rows.length;i++){
+        const get=v=>document.getElementsByName(`row${i}_${v}`)[0]?.value.trim()||"";
+        const r={
+          ref:get("ref"), firme:get("firme"), matricule:get("matricule"),
+          nom:get("nom"), prenom:get("prenom"),
+          nom1:get("nom1"), nom2:get("nom2"),
+          prenom1:get("prenom1"), prenom2:get("prenom2"),
+          sexe:get("sexe"), annee:get("annee"),
+          mois:get("mois"), jour:get("jour"),
+          lien_familial:get("lien_familial"), emploi:get("emploi"),
+          adresse:get("adresse"), app:get("app"),
+          code_postal:get("code_postal"), numero_permis:get("numero_permis"),
+          notes:get("notes")
         };
-        // Lignes vides
         if(Object.values(r).every(v=>v==="")) continue;
 
-        // Détecte mode
-        if(r.emploi.toUpperCase()==="COMPAGNIE") hasComp = true;
-        if(r.emploi=== "Famille" || r.emploi==="Famille Ext Canada") hasFamily = true;
+        const mark=(field)=>{
+          const el=document.getElementsByName(`row${i}_${field}`)[0];
+          el?.classList.add("error"); valid=false;
+        };
 
-        // Validation
-        const markErr = name=>{ document.getElementsByName(name)[0]?.classList.add("error"); valid=false; };
-
-        if(hasFamily){
-          // mode familial
-          if(!r.nom1)          markErr("row"+i+"_nom1");
-          if(!r.prenom1)       markErr("row"+i+"_prenom1");
-          if(!r.sexe)          markErr("row"+i+"_sexe");
-          if(!r.annee)         markErr("row"+i+"_annee");
-          if(!r.mois)          markErr("row"+i+"_mois");
-          if(!r.jour)          markErr("row"+i+"_jour");
-          if(!r.lien_familial) markErr("row"+i+"_lien_familial");
-          if(!r.emploi)        markErr("row"+i+"_emploi");
-        } else if(hasComp){
-          // mode compagnie
-          if(!r.firme)   markErr("row"+i+"_firme");
-          if(!r.adresse) markErr("row"+i+"_adresse");
-        } else {
-          // mode régulier
-          if(!r.nom)    markErr("row"+i+"_nom");
-          if(!r.prenom) markErr("row"+i+"_prenom");
-          if(!r.sexe)   markErr("row"+i+"_sexe");
-          if(!r.annee)  markErr("row"+i+"_annee");
-          if(!r.mois)   markErr("row"+i+"_mois");
-          if(!r.jour)   markErr("row"+i+"_jour");
-          if(!r.emploi) markErr("row"+i+"_emploi");
+        // Calcul de la DDN
+        let ddn="";
+        if(r.annee&&r.mois&&r.jour){
+          const mNum=parseInt(r.mois.substr(0,2));
+          ddn=`${r.annee}-${String(mNum).padStart(2,"0")}-${r.jour}`;
+          r.ddn=ddn;
         }
 
-        // Vérification permis
+        // Validation obligatoire
+        if(r.emploi==="Compagnie"){
+          if(!r.firme) mark("firme");
+        }
+        else if(document.body.classList.contains("family-mode")){
+          ["nom1","prenom1","sexe","lien_familial","emploi"].forEach(f=>{
+            if(!r[f]) mark(f);
+          });
+          if(!r.ddn) ["annee","mois","jour"].forEach(f=>mark(f));
+        }
+        else {
+          ["nom","prenom","sexe","emploi"].forEach(f=>{
+            if(!r[f]) mark(f);
+          });
+          if(!r.ddn) ["annee","mois","jour"].forEach(f=>mark(f));
+        }
+        if(!valid){ alert("Champs obligatoires manquants."); return; }
+
+        // Permis
         if(r.numero_permis.length>15){
-          markErr("row"+i+"_numero_permis");
-          alert("Erreur : Le numéro du permis ne peut dépasser 15 caractères.");
+          mark("numero_permis");
+          alert("Le numéro de permis ne peut dépasser 15 caractères.");
           return;
         }
+        // Postal
+        let cp=r.code_postal.replace(/\s+/g,"");
+        if(cp.length===6) cp=cp.slice(0,3)+" "+cp.slice(3);
+        r.code_postal=(cp.length===7&&cp[3]===" ")?cp:"";
 
-        // Formatage code postal
-        let cp = r.code_postal.replace(/\s+/g,"");
-        if(cp.length===6) cp = cp.slice(0,3)+" "+cp.slice(3);
-        if(!(cp==="" || (cp.length===7 && cp.charAt(3)===" "))) cp="";
-        r.code_postal = cp;
-
-        // DDN et âge (pas pour compagnie)
-        if(!hasComp && r.annee && r.mois && r.jour){
-          const moNbr = parseInt(r.mois.substr(0,2));
-          r.ddn = `${r.annee}-${String(moNbr).padStart(2,"0")}-${r.jour}`;
-          const birth = new Date(r.annee, moNbr-1, parseInt(r.jour));
-          let age = (new Date()).getFullYear() - birth.getFullYear();
-          const m = (new Date()).getMonth() - birth.getMonth();
-          if(m<0 || (m===0 && (new Date()).getDate()<birth.getDate())) age--;
-          if(age<16 || age>100){
-            ["annee","mois","jour"].forEach(c=>markErr(`row${i}_${c}`));
-            alert("Erreur : L'âge doit être entre 16 et 100 ans.");
-            return;
-          }
-        }
-
-        rows.push(r);
+        rowsData.push(r);
       }
+      if(!valid || rowsData.length===0){ if(rowsData.length===0) alert("Aucune donnée."); return; }
 
-      if(!valid){ alert("Veuillez remplir les champs obligatoires."); return; }
-      if(rows.length===0){ alert("Aucune donnée saisie."); return; }
-
-      // Construction du CSV
-      let headers, csvContent = "";
-      if(hasFamily){
-        headers = ["REFERENCE","NOM1","NOM2","PRENOM1","PRENOM2","SEXE",
-                   "DDN","LIEN_FAMILIAL","EMPLOI","ADRESSE","APP",
-                   "CODE_POSTAL","NUMERO_PERMIS","NOTES"];
-        csvContent = headers.join(";") + "\n";
-        rows.forEach(r=>{
-          csvContent += [
-            r.ref, r.nom1, r.nom2, r.prenom1, r.prenom2,
-            r.sexe, r.ddn, r.lien_familial, r.emploi,
-            r.adresse, r.app, r.code_postal, r.numero_permis, r.notes
-          ].join(";") + "\n";
+      // Construction CSV
+      let headers, csv="";
+      if(document.body.classList.contains("family-mode")){
+        headers=["REFERENCE","NOM1","NOM2","PRENOM1","PRENOM2",
+          "SEXE","DDN","LIEN_FAMILIAL","EMPLOI","ADRESSE","APP",
+          "CODE_POSTAL","NUMERO_PERMIS","NOTES"];
+        csv=headers.join(";")+"\n";
+        rowsData.forEach(r=>{
+          csv+=[
+            r.ref,r.nom1,r.nom2,r.prenom1,r.prenom2,
+            r.sexe,r.ddn,r.lien_familial,r.emploi,
+            r.adresse,r.app,r.code_postal,r.numero_permis,r.notes
+          ].join(";")+"\n";
         });
-      } else if(hasComp){
-        headers = ["NUMERO_REFERENCE","FIRME","MATRICULE_FIRME","NOM","PRENOM",
-                   "SEXE","DDN","EMPLOI","ADRESSE","APP","VILLE",
-                   "CODE_POSTAL","NUMERO_PERMIS","NOTES"];
-        csvContent = headers.join(";") + "\n";
-        rows.forEach(r=>{
-          csvContent += [
-            r.ref, r.firme, r.matricule, r.nom, r.prenom,
-            r.sexe, r.ddn, r.emploi, r.adresse, r.app,
-            r.ville, r.code_postal, r.numero_permis, r.notes
-          ].join(";") + "\n";
+      }
+      else if(selectedClient?.emplois.includes("Compagnie") && !document.body.classList.contains("family-mode")){
+        headers=["NUMERO_REFERENCE","FIRME","MATRICULE_FIRME","NOM","PRENOM",
+          "SEXE","DDN","EMPLOI","ADRESSE","APP",
+          "CODE_POSTAL","NUMERO_PERMIS","NOTES"];
+        csv=headers.join(";")+"\n";
+        rowsData.forEach(r=>{
+          csv+=[
+            r.ref,r.firme,r.matricule,r.nom,r.prenom,
+            r.sexe,r.ddn,r.emploi,r.adresse,r.app,
+            r.code_postal,r.numero_permis,r.notes
+          ].join(";")+"\n";
         });
       } else {
-        headers = ["NUMERO_REFERENCE","NOM","PRENOM","SEXE",
-                   "DDN","EMPLOI","ADRESSE","APP",
-                   "CODE_POSTAL","NUMERO_PERMIS","NOTES"];
-        csvContent = headers.join(";") + "\n";
-        rows.forEach(r=>{
-          csvContent += [
-            r.ref, r.nom, r.prenom, r.sexe,
-            r.ddn, r.emploi, r.adresse, r.app,
-            r.code_postal, r.numero_permis, r.notes
-          ].join(";") + "\n";
+        headers=["NUMERO_REFERENCE","NOM","PRENOM","SEXE",
+          "DDN","EMPLOI","ADRESSE","APP","CODE_POSTAL","NUMERO_PERMIS","NOTES"];
+        csv=headers.join(";")+"\n";
+        rowsData.forEach(r=>{
+          csv+=[
+            r.ref,r.nom,r.prenom,r.sexe,
+            r.ddn,r.emploi,r.adresse,r.app,
+            r.code_postal,r.numero_permis,r.notes
+          ].join(";")+"\n";
         });
       }
 
       // Téléchargement
-      const blob = new Blob(["\uFEFF"+csvContent], { type: "text/csv;charset=windows-1252;" });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement("a");
-      const safeName = selectedClient
+      const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=windows-1252;"}), url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      const safe=selectedClient
         ? `${selectedClient.number}-${selectedClient.name.replace(/\s+/g,"")}`
         : "Export";
-      a.href = url;
-      a.download = `${safeName}_${ts}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      a.href=url; a.download=`${safe}_${ts}.csv`;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
       alert("CSV généré et téléchargé.");
     });
-
-    /*****************************************
-     *  9) RESET & NB LIGNES
-     *****************************************/
-    document.getElementById("resetButton").addEventListener("click", ()=>{
-      document.getElementById("data-form").reset();
-      clearErrors();
-      generateDefaultRows(defaultRowCount);
-      updateEmploiOptions();
-    });
-
-    const setRows = n=>{
-      generateDefaultRows(n);
-      updateEmploiOptions();
-    };
-    document.getElementById("set1Row").addEventListener("click", ()=>setRows(1));
-    document.getElementById("set5Rows").addEventListener("click", ()=>setRows(5));
-    document.getElementById("set10Rows").addEventListener("click", ()=>setRows(10));
   </script>
 </body>
 </html>
