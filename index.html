@@ -1,92 +1,12 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>Outil TT Alimentation - Login</title>
-  <style>
-    /* =========================
-       STYLES GLOBAUX / LOGIN
-    ========================= */
-    body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f7f7f7;color:#333;}
-    #login-page{
-      position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      z-index:1000;opacity:1;transition:opacity 1s ease;
-    }
-    #login-page.fade-out{opacity:0;}
-    #login-page .login-container{
-      text-align:center;border:1px solid #ccc;padding:30px;border-radius:8px;
-      box-shadow:0 2px 6px rgba(0,0,0,.2);background:#fff;
-    }
-    #login-page img{max-height:80px;margin-bottom:20px;}
-    #login-page input[type=password]{
-      padding:10px;font-size:16px;width:250px;border:1px solid #ccc;
-      border-radius:4px;margin-bottom:20px;
-    }
-    #login-page button{
-      padding:10px 20px;font-size:16px;border:none;border-radius:4px;
-      background:#4CAF50;color:#fff;cursor:pointer;
-    }
-
-    /* =========================
-       INTERFACE PRINCIPALE
-    ========================= */
-    #main-page{display:none;padding:20px;max-width:1900px;margin:auto;}
-    .header-container{display:flex;align-items:center;margin-bottom:20px;}
-    .header-logo{max-height:60px;margin-right:10px;}
-    .header-title{font-size:32px;margin:0;}
-
-    .section{
-      margin-bottom:20px;background:#fff;padding:15px;border-radius:6px;
-      box-shadow:0 2px 4px rgba(0,0,0,.1);
-    }
-    label{display:block;margin-bottom:5px;font-weight:bold;}
-    input[type=text],select{
-      padding:6px;margin-bottom:10px;box-sizing:border-box;
-      border:1px solid #ccc;border-radius:4px;
-    }
-    input[type=text]{text-transform:uppercase;}
-
-    #clientSelection{display:flex;align-items:flex-start;gap:5px;margin-bottom:10px;}
-    #clearClient{
-      margin-top:5px;padding:5px 10px;font-size:14px;border:none;border-radius:4px;
-      background:#f44336;color:#fff;cursor:pointer;
-    }
-    .client-info{flex:1;}
-    .client-buttons{display:flex;gap:5px;}
-
-    .table-container{overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;background:#fff;}
-    th,td{border:1px solid #ddd;padding:8px;text-align:left;}
-
-    /* Largeurs utiles (restent valides qu’on masque ou non FIRME/MATRICULE) */
-    #defaultTableContainer th:nth-child(7),
-    #defaultTableContainer td:nth-child(7){width:60px;}  /* ANNÉE */
-    #defaultTableContainer th:nth-child(12),
-    #defaultTableContainer td:nth-child(12){width:60px;} /* APP   */
-    #defaultTableContainer th:nth-child(14),
-    #defaultTableContainer td:nth-child(14){width:80px;} /* CP    */
-    #defaultTableContainer th:nth-child(15),
-    #defaultTableContainer td:nth-child(15){width:15ch;} /* PERMIS*/
-
-    /* Masque VILLE (col 13) en permanence */
-    #defaultTableContainer th:nth-child(13),
-    #defaultTableContainer td:nth-child(13){display:none;}
-
-    /* Masque FIRME + MATRICULE si le client ne possède pas "Compagnie" */
-    body.no-comp #defaultTableContainer th:nth-child(2),
-    body.no-comp #defaultTableContainer td:nth-child(2),
-    body.no-comp #defaultTableContainer th:nth-child(3),
-    body.no-comp #defaultTableContainer td:nth-child(3){display:none;}
-
-    .button-container{display:flex;justify-content:flex-end;align-items:center;margin-top:10px;gap:10px;}
-    button{padding:10px 15px;border:none;border-radius:4px;background:#4CAF50;color:#fff;cursor:pointer;}
-    #addRow{background:blue;}
-    #resetButton{background:#f44336;}
-    .error{border:2px solid red !important;background:#fdd;}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="no-comp">
+<body class="mode-normal">
 
   <!-- ======================= LOGIN ======================= -->
   <div id="login-page">
@@ -115,9 +35,9 @@
         <button type="button" id="clearClient">Désélectionner le client</button>
       </div>
       <div class="client-buttons">
-        <button type="button" id="set1Row">1&nbsp;ligne</button>
-        <button type="button" id="set5Rows">5&nbsp;lignes</button>
-        <button type="button" id="set10Rows">10&nbsp;lignes</button>
+        <button type="button" id="set1Row">1 ligne</button>
+        <button type="button" id="set5Rows">5 lignes</button>
+        <button type="button" id="set10Rows">10 lignes</button>
       </div>
     </div>
 
@@ -128,17 +48,43 @@
           <table>
             <thead>
               <tr>
-                <th>REFERENCE</th><th>FIRME</th><th>MATRICULE</th><th>NOM</th><th>PRENOM</th><th>SEXE</th>
-                <th>ANNÉE</th><th>MOIS</th><th>JOUR</th><th>EMPLOI</th>
-                <th>ADRESSE</th><th>APP</th><th>VILLE</th><th>POSTAL</th>
-                <th>PERMIS</th><th>NOTES</th>
+                <th class="col-common">REFERENCE</th>
+
+                <!-- Compagnie only -->
+                <th class="col-comp">FIRME</th>
+                <th class="col-comp">MATRICULE</th>
+
+                <!-- Normal only -->
+                <th class="col-normal">NOM</th>
+                <th class="col-normal">PRENOM</th>
+
+                <!-- Famille only -->
+                <th class="col-family">NOM1</th>
+                <th class="col-family">NOM2</th>
+                <th class="col-family">PRENOM1</th>
+                <th class="col-family">PRENOM2</th>
+
+                <th class="col-common">SEXE</th>
+                <th class="col-common">ANNÉE</th>
+                <th class="col-common">MOIS</th>
+                <th class="col-common">JOUR</th>
+
+                <!-- Famille only -->
+                <th class="col-family">LIEN_FAMILIAL</th>
+
+                <th class="col-common">EMPLOI</th>
+                <th class="col-common">ADRESSE</th>
+                <th class="col-common">APP</th>
+                <th class="col-common">CODE_POSTAL</th>
+                <th class="col-common">NUMERO_PERMIS</th>
+                <th class="col-common">NOTES</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
 
-        <!-- Boutons -->
+        <!-- Boutons d'action -->
         <div class="button-container">
           <button type="button" id="addRow">Ajouter ligne</button>
           <button type="reset"  id="resetButton">Effacer tout</button>
@@ -148,339 +94,6 @@
     </div>
   </div>
 
-  <!-- ======================= SCRIPT ======================= -->
-  <script>
-    /*****************************************************************
-     *            1) LOGIN
-     *****************************************************************/
-    const pwdInput = document.getElementById("password");
-    const loginBtn = document.getElementById("loginButton");
-    pwdInput.addEventListener("keyup", e=>{ if(e.key==="Enter") tryLogin(); });
-    loginBtn.addEventListener("click",  tryLogin);
-
-    function tryLogin(){
-      if(pwdInput.value==="Alim7420"){
-        document.getElementById("login-page").classList.add("fade-out");
-        setTimeout(()=>{
-          document.getElementById("login-page").style.display="none";
-          document.getElementById("main-page").style.display ="block";
-          fetch("fichier_client(in).csv")
-            .then(r=>r.text()).then(parseClientCSV)
-            .catch(err=>console.error("Erreur CSV client :",err));
-        },1000);
-      }else{ alert("Mot de passe incorrect."); }
-    }
-
-    /*****************************************************************
-     *            2) VARIABLES GLOBALES
-     *****************************************************************/
-    let clients={}, selectedClient=null;
-    let defaultRowCount=10;
-
-    /*****************************************************************
-     *            3) CHARGEMENT / LISTE CLIENTS
-     *****************************************************************/
-    function parseClientCSV(csv){
-      const lines = csv.split(/\r?\n/);
-      if(lines.length<2) return;
-      const headers = lines[0].split(";");
-      const idxClient=headers.indexOf("Client");
-      const idxName  =headers.indexOf("Nom client");
-      const idxEmp   =idxName+1;
-
-      for(let i=1;i<lines.length;i++){
-        if(!lines[i].trim()) continue;
-        const f=lines[i].split(";");
-        const num = f[idxClient].trim();
-        const name= f[idxName].trim();
-        const set = new Set();
-        for(let j=idxEmp;j<f.length;j++){
-          f[j].split("!#!").forEach(e=>{if(e.trim())set.add(e.trim());});
-        }
-        clients[num]={number:num,name,emplois:[...set].sort()};
-      }
-      populateClientDatalist();
-    }
-    function populateClientDatalist(){
-      const dl=document.getElementById("clientList"); dl.innerHTML="";
-      for(const n in clients){
-        const o=document.createElement("option");
-        o.value=`${n} - ${clients[n].name}`; dl.appendChild(o);
-      }
-    }
-
-    /*****************************************************************
-     *            4) SÉLECTION CLIENT
-     *****************************************************************/
-    function toggleFirmeCols(show){
-      document.body.classList.toggle("no-comp", !show);
-    }
-    document.getElementById("clientInput").addEventListener("change",e=>{
-      const parts=e.target.value.split(" - ");
-      if(parts.length){
-        const num=parts[0].trim();
-        selectedClient=clients[num]||null;
-        updateEmploiOptions();
-        toggleFirmeCols(selectedClient && selectedClient.emplois.includes("Compagnie"));
-      }
-    });
-    document.getElementById("clearClient").addEventListener("click",()=>{
-      document.getElementById("clientInput").value=""; selectedClient=null;
-      updateEmploiOptions(); toggleFirmeCols(false);
-    });
-
-    /*****************************************************************
-     *            5) GESTION LISTE EMPLOIS
-     *****************************************************************/
-    function updateEmploiOptions(){
-      const sels=document.querySelectorAll("select[name^='row'][name$='_emploi']");
-      sels.forEach(sel=>{
-        const current=sel.value; sel.innerHTML="";
-        const add=v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);};
-        add("");
-        if(selectedClient && selectedClient.emplois.length) selectedClient.emplois.forEach(add);
-        /* Toujours proposer "Compagnie" */
-        if(![...sel.options].some(o=>o.value==="Compagnie")) add("Compagnie");
-        if([...sel.options].some(o=>o.value===current)) sel.value=current;
-      });
-    }
-
-    /*****************************************************************
-     *            6) GÉNÉRATION TABLE
-     *****************************************************************/
-    const moisOptions=`<option value=""></option>
-        <option value="01- JANVIER">01- JANVIER</option>
-        <option value="02- FÉVRIER">02- FÉVRIER</option>
-        <option value="03- MARS">03- MARS</option>
-        <option value="04- AVRIL">04- AVRIL</option>
-        <option value="05- MAI">05- MAI</option>
-        <option value="06- JUIN">06- JUIN</option>
-        <option value="07- JUILLET">07- JUILLET</option>
-        <option value="08- AOÛT">08- AOÛT</option>
-        <option value="09- SEPTEMBRE">09- SEPTEMBRE</option>
-        <option value="10- OCTOBRE">10- OCTOBRE</option>
-        <option value="11- NOVEMBRE">11- NOVEMBRE</option>
-        <option value="12- DÉCEMBRE">12- DÉCEMBRE</option>`;
-    const mkJourOptions=()=>{
-      let s='<option value=""></option>';
-      for(let d=1;d<=31;d++){const day=String(d).padStart(2,"0");s+=`<option value="${day}">${day}</option>`;}
-      return s;
-    };
-    function defaultRow(i){
-      return `
-      <tr>
-        <td><input type="text" name="row${i}_ref"></td>
-        <td><input type="text" name="row${i}_firme"></td>
-        <td><input type="text" name="row${i}_matricule"></td>
-        <td><input type="text" name="row${i}_nom" required></td>
-        <td><input type="text" name="row${i}_prenom" required></td>
-        <td>
-          <select name="row${i}_sexe" required>
-            <option value=""></option><option value="M">M</option>
-            <option value="F">F</option><option value="X">X</option>
-          </select>
-        </td>
-        <td><input type="text" name="row${i}_annee" placeholder="YYYY" style="width:60px;" required></td>
-        <td><select name="row${i}_mois"  required>${moisOptions}</select></td>
-        <td><select name="row${i}_jour"  required>${mkJourOptions()}</select></td>
-        <td><select name="row${i}_emploi" required><option value=""></option><option value="Compagnie">Compagnie</option></select></td>
-        <td><input type="text" name="row${i}_adresse"></td>
-        <td><input type="text" name="row${i}_app" style="width:60px;"></td>
-        <td><input type="text" name="row${i}_ville"></td>
-        <td><input type="text" name="row${i}_code_postal" style="width:80px;"></td>
-        <td><input type="text" name="row${i}_numero_permis" style="width:15ch;"></td>
-        <td><input type="text" name="row${i}_notes"></td>
-      </tr>`;}
-    function generateDefaultRows(count=10){
-      defaultRowCount=count; const tb=document.querySelector("#defaultTableContainer tbody");
-      tb.innerHTML=""; for(let i=0;i<count;i++) tb.insertAdjacentHTML("beforeend",defaultRow(i));
-    }
-    generateDefaultRows();
-
-    /*****************************************************************
-     *            7) AJOUTER LIGNE
-     *****************************************************************/
-    document.getElementById("addRow").addEventListener("click",()=>{
-      const tb=document.querySelector("#defaultTableContainer tbody");
-      const i=tb.rows.length; tb.insertAdjacentHTML("beforeend",defaultRow(i));
-      updateEmploiOptions();
-    });
-
-    /*****************************************************************
-     *            8) FORMATAGE CP + MAJUSCULES + LOGIQUE FIRME/COMPAGNIE
-     *****************************************************************/
-    document.addEventListener("input",e=>{
-      /* 8-a) Formatage code postal + majuscules */
-      if(e.target && e.target.name && e.target.name.endsWith("_code_postal")){
-        let v=e.target.value.toUpperCase().replace(/\s+/g,"");
-        if(v.length>3) v=v.slice(0,3)+" "+v.slice(3);
-        e.target.value=v.slice(0,7);
-      }
-      if(e.target && e.target.tagName==="INPUT" && e.target.type==="text"){
-        e.target.value=e.target.value.toUpperCase();
-      }
-
-      /* 8-b) Détection saisie FIRME  → mode Compagnie */
-      if(e.target && e.target.name && /^row\d+_firme$/.test(e.target.name)){
-        handleFirmeInput(e.target);
-      }
-    });
-
-    /* Gère le grisage / dégrissage + emploi Compagnie */
-    function handleFirmeInput(firmeInput){
-      const m=firmeInput.name.match(/^row(\d+)_firme$/);
-      if(!m) return;
-      const i=m[1];
-      const isComp = firmeInput.value.trim() !== "";
-      const nom   = document.getElementsByName(`row${i}_nom`)[0];
-      const prenom= document.getElementsByName(`row${i}_prenom`)[0];
-      const annee = document.getElementsByName(`row${i}_annee`)[0];
-      const mois  = document.getElementsByName(`row${i}_mois`)[0];
-      const jour  = document.getElementsByName(`row${i}_jour`)[0];
-      const sexe  = document.getElementsByName(`row${i}_sexe`)[0];
-      const emploi= document.getElementsByName(`row${i}_emploi`)[0];
-
-      const toggle=(el)=>{ el.disabled=isComp; if(isComp){el.value="";} };
-      [nom,prenom,annee,mois,jour,sexe].forEach(toggle);
-
-      if(isComp){
-        /* Ajoute l’option Compagnie si absente */
-        if(![...emploi.options].some(o=>o.value==="Compagnie")){
-          const opt=document.createElement("option");
-          opt.value="Compagnie"; opt.textContent="Compagnie";
-          emploi.appendChild(opt);
-        }
-        emploi.value="Compagnie";
-      }else{
-        if(emploi.value==="Compagnie") emploi.value="";
-      }
-    }
-
-    /*****************************************************************
-     *            9) EXPORT CSV
-     *****************************************************************/
-    function clearErrors(){document.querySelectorAll(".error").forEach(el=>el.classList.remove("error"));}
-
-    document.getElementById("saveButton").addEventListener("click",()=>{
-      clearErrors();
-      let csvContent="", rows=[], hasComp=false;
-      const now=new Date(), pad=n=>String(n).padStart(2,"0");
-      const ts=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-      const tb=document.querySelector("#defaultTableContainer tbody");
-      let valid=true;
-
-      for(let i=0;i<tb.rows.length;i++){
-        const r={
-          ref          :document.getElementsByName(`row${i}_ref`)[0].value.trim(),
-          firme        :document.getElementsByName(`row${i}_firme`)[0].value.trim(),
-          matricule    :document.getElementsByName(`row${i}_matricule`)[0].value.trim(),
-          nom          :document.getElementsByName(`row${i}_nom`)[0].value.trim(),
-          prenom       :document.getElementsByName(`row${i}_prenom`)[0].value.trim(),
-          sexe         :document.getElementsByName(`row${i}_sexe`)[0].value.trim(),
-          annee        :document.getElementsByName(`row${i}_annee`)[0].value.trim(),
-          mois         :document.getElementsByName(`row${i}_mois`)[0].value.trim(),
-          jour         :document.getElementsByName(`row${i}_jour`)[0].value.trim(),
-          emploi       :document.getElementsByName(`row${i}_emploi`)[0].value.trim(),
-          adresse      :document.getElementsByName(`row${i}_adresse`)[0].value.trim(),
-          app          :document.getElementsByName(`row${i}_app`)[0].value.trim(),
-          ville        :document.getElementsByName(`row${i}_ville`)[0].value.trim(),
-          code_postal  :document.getElementsByName(`row${i}_code_postal`)[0].value.trim(),
-          numero_permis:document.getElementsByName(`row${i}_numero_permis`)[0].value.trim(),
-          notes        :document.getElementsByName(`row${i}_notes`)[0].value.trim()
-        };
-        if(Object.values(r).every(v=>v==="")) continue;   // ligne vide
-
-        const markError=name=>{document.getElementsByName(name)[0].classList.add("error");valid=false;};
-
-        if(r.emploi.toUpperCase()==="COMPAGNIE"){
-          hasComp=true;
-          if(!r.firme)   markError(`row${i}_firme`);
-          if(!r.adresse) markError(`row${i}_adresse`);
-        }else{
-          if(!r.nom)   markError(`row${i}_nom`);
-          if(!r.prenom)markError(`row${i}_prenom`);
-          if(!r.sexe)  markError(`row${i}_sexe`);
-          if(!r.annee) markError(`row${i}_annee`);
-          if(!r.mois)  markError(`row${i}_mois`);
-          if(!r.jour)  markError(`row${i}_jour`);
-          if(!r.emploi)markError(`row${i}_emploi`);
-        }
-
-        if(r.numero_permis && r.numero_permis.length>15){
-          document.getElementsByName(`row${i}_numero_permis`)[0].classList.add("error");
-          alert("Erreur : Le numéro du permis ne peut dépasser 15 caractères.");
-          return;
-        }
-
-        let cp=r.code_postal.toUpperCase().replace(/\s+/g,"");
-        if(cp.length===6) cp=cp.slice(0,3)+" "+cp.slice(3);
-        r.code_postal=cp;
-        if(!(cp==="" || (cp.length===7 && cp.charAt(3)===" "))) r.code_postal="";
-
-        /* DDN et âge uniquement si ce n’est PAS une compagnie */
-        let ddn="";
-        if(r.emploi.toUpperCase()!=="COMPAGNIE" && r.annee && r.mois && r.jour){
-          const moNbr=parseInt(r.mois.substr(0,2));
-          ddn=`${r.annee}-${("0"+moNbr).slice(-2)}-${r.jour}`;
-          const birth=new Date(parseInt(r.annee),moNbr-1,parseInt(r.jour));
-          const today=new Date();
-          let age=today.getFullYear()-birth.getFullYear();
-          const m=today.getMonth()-birth.getMonth();
-          if(m<0||(m===0 && today.getDate()<birth.getDate())) age--;
-          if(age<16||age>100){
-            ["annee","mois","jour"].forEach(col=>document.getElementsByName(`row${i}_${col}`)[0].classList.add("error"));
-            alert("Erreur : L'âge doit être entre 16 et 100 ans.");
-            return;
-          }
-        }
-        r.ddn=ddn;
-        r.nom   =r.nom.toUpperCase();
-        r.prenom=r.prenom.toUpperCase();
-        rows.push(r);
-      }
-      if(!valid){alert("Veuillez remplir les champs obligatoires.");return;}
-      if(rows.length===0){alert("Aucune donnée saisie.");return;}
-
-      /* ---------- CSV ---------- */
-      if(hasComp){
-        const headers=["NUMERO_REFERENCE","FIRME","MATRICULE_FIRME","NOM","PRENOM","SEXE","DDN","EMPLOI","ADRESSE","APP","VILLE","CODE_POSTAL","NUMERO_PERMIS","NOTES"];
-        csvContent=headers.join(";")+"\n";
-        rows.forEach(r=>{
-          csvContent+=[
-            r.ref,r.firme,r.matricule,r.nom,r.prenom,r.sexe,r.ddn,r.emploi,r.adresse,r.app,r.ville,r.code_postal,r.numero_permis,r.notes
-          ].join(";")+"\n";
-        });
-      }else{
-        const headers=["NUMERO_REFERENCE","NOM","PRENOM","SEXE","DDN","EMPLOI","ADRESSE","APP","CODE_POSTAL","NUMERO_PERMIS","NOTES"];
-        csvContent=headers.join(";")+"\n";
-        rows.forEach(r=>{
-          csvContent+=[
-            r.ref,r.nom,r.prenom,r.sexe,r.ddn,r.emploi,r.adresse,r.app,r.code_postal,r.numero_permis,r.notes
-          ].join(";")+"\n";
-        });
-      }
-
-      /* ---------- TÉLÉCHARGEMENT ---------- */
-      const blob=new Blob(["\uFEFF"+csvContent],{type:"text/csv;charset=windows-1252;"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      const safeName = selectedClient ? `${selectedClient.number}-${selectedClient.name.replace(/ /g,"")}` : "Export";
-      a.href=url; a.download=`${safeName}_${ts}.csv`; document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(url);
-      alert("CSV généré et téléchargé.");
-    });
-
-    /*****************************************************************
-     *            10) RESET & NB LIGNES
-     *****************************************************************/
-    document.getElementById("resetButton").addEventListener("click",()=>{
-      document.getElementById("data-form").reset(); clearErrors();
-      generateDefaultRows(defaultRowCount); updateEmploiOptions();
-    });
-    const setRows=n=>{generateDefaultRows(n); updateEmploiOptions();};
-    document.getElementById("set1Row").addEventListener("click",()=>setRows(1));
-    document.getElementById("set5Rows").addEventListener("click",()=>setRows(5));
-    document.getElementById("set10Rows").addEventListener("click",()=>setRows(10));
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
