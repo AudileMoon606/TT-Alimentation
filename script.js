@@ -145,9 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </select>
           </td>
           <td class="col-common">
-            <select name="row${i}_emploi">
-              <option value=""></option><option>Compagnie</option>
-            </select>
+            <select name="row${i}_emploi"></select>
           </td>
           <td class="col-common"><input type="text" name="row${i}_adresse"></td>
           <td class="col-common"><input type="text" name="row${i}_app" style="width:60px;"></td>
