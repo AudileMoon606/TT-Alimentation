@@ -1,6 +1,18 @@
 // script.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Thème sombre : récupération, bascule et persistance localStorage *
+    const savedTheme = localStorage.getItem('darkMode') === 'true';
+    if (savedTheme) document.body.classList.add('dark-mode');
+
+    const themeBtn = document.getElementById('toggleTheme');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode',
+          document.body.classList.contains('dark-mode'));
+      });
+    }
     // 1) Variables globales
     let clients = {}, selectedClient = null, defaultRowCount = 10;
   

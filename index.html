@@ -6,12 +6,16 @@
   <title>Outil TT Alimentation - Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="mode-normal">
+
+<!-- ↓  Le mode d’affichage (normal/comp/family) est la première classe.
+         On ajoutera/retirera dynamiquement la classe “dark-mode”.        -->
+<body class="mode-normal" id="body">
 
   <!-- ======================= LOGIN ======================= -->
   <div id="login-page">
     <div class="login-container">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU"
+           alt="Logo">
       <h2>Bienvenue</h2>
       <input type="password" id="password" placeholder="Mot de passe">
       <br>
@@ -22,18 +26,27 @@
   <!-- ======================= INTERFACE ==================== -->
   <div id="main-page">
     <div class="header-container">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU" alt="Logo" class="header-logo">
-      <h1 class="header-title">Outil TT Alimentation</h1>
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn8j7-SXb8p7I8_p3zcqPpfI2plrpABlD4eGw73IYdUsjfdx4dsN2VrXGv4oc6ZTgtcyQ&usqp=CAU"
+           alt="Logo" class="header-logo">
+      <h1 class="header-title">Outil TT Alimentation</h1>
+
+      <!--  Bouton discret d’activation du mode sombre  -->
+      <button id="toggleTheme" class="theme-toggle" title="Basculer le thème">
+        &#x1F319;
+      </button>
     </div>
 
     <!-- Sélection client -->
     <div class="section" id="clientSelection">
       <div class="client-info">
         <label for="clientInput">Sélectionner le client (numéro et/ou nom) :</label>
-        <input type="text" id="clientInput" list="clientList" placeholder="Ex. 2419 - Curateur public du Québec">
+        <input type="text" id="clientInput" list="clientList"
+               placeholder="Ex. 2419 - Curateur public du Québec">
         <datalist id="clientList"></datalist>
+
         <button type="button" id="clearClient">Désélectionner le client</button>
       </div>
+
       <div class="client-buttons">
         <button type="button" id="set1Row">1 ligne</button>
         <button type="button" id="set5Rows">5 lignes</button>
@@ -97,3 +110,7 @@
   <script src="script.js"></script>
 </body>
 </html>
+<!--
+  Ce fichier HTML est la page principale de l'outil TT Alimentation.
+  Il contient le formulaire pour saisir les données des clients et les options de sélection.
+  Le code JavaScript associé gère la logique de l'application.

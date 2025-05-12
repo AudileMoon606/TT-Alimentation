@@ -1,136 +1,156 @@
 /* style.css */
 
 /* =========================
-   STYLES GLOBAUX / LOGIN
-========================= */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0; padding: 0;
-    background: #f7f7f7; color: #333;
+   PALETTE via variables CSS
+   ========================= */
+   :root{
+    --bg          : #f0f3ef;
+    --fg          : #263626;
+    --card-bg     : #ffffff;
+    --border      : #b7c3b2;
+    --shadow      : rgba(0,0,0,.08);
+    --accent      : #c9a418;   /* boutons principaux */
+    --danger      : #d32f2f;   /* boutons d’effacement */
   }
-  #login-page {
-    position: fixed; top:0; left:0; right:0; bottom:0;
-    background: #fff;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 1000; opacity: 1;
-    transition: opacity 1s ease;
+  body.dark-mode{
+    --bg          : #1d2a20;
+    --fg          : #f2f2f2;
+    --card-bg     : #263626;
+    --border      : #3c4c36;
+    --shadow      : rgba(0,0,0,.65);
+    --accent      : #c9a418;
+    --danger      : #d32f2f;
   }
-  #login-page.fade-out { opacity: 0; }
-  #login-page .login-container {
-    text-align: center;
-    border: 1px solid #ccc;
-    padding: 30px; border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.2);
-    background: #fff;
+  
+  /* =========================
+     STYLES GLOBAUX / LOGIN
+     ========================= */
+  body{
+    font-family:Arial,sans-serif;
+    margin:0;padding:0;
+    background:var(--bg);
+    color:var(--fg);
   }
-  #login-page img { max-height: 80px; margin-bottom: 20px; }
-  #login-page input[type=password] {
-    padding: 10px; font-size: 16px; width: 250px;
-    border: 1px solid #ccc; border-radius: 4px;
-    margin-bottom: 20px;
+  
+  /* ---- Page de connexion ---- */
+  #login-page{
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:var(--card-bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:1000;opacity:1;transition:opacity 1s ease;
   }
-  #login-page button {
-    padding: 10px 20px; font-size: 16px;
-    border: none; border-radius: 4px;
-    background: #4CAF50; color: #fff;
-    cursor: pointer;
+  #login-page.fade-out{opacity:0;}
+  #login-page .login-container{
+    text-align:center;border:1px solid var(--border);
+    padding:30px;border-radius:8px;
+    box-shadow:0 2px 6px var(--shadow);
+    background:var(--card-bg);
+  }
+  #login-page img{max-height:80px;margin-bottom:20px;}
+  #login-page input[type=password]{
+    padding:10px;font-size:16px;width:250px;
+    border:1px solid var(--border);border-radius:4px;
+    margin-bottom:20px;background:var(--card-bg);color:var(--fg);
+  }
+  #login-page button{
+    padding:10px 20px;font-size:16px;
+    border:none;border-radius:4px;
+    background:var(--accent);color:#fff;cursor:pointer;
   }
   
   /* =========================
      INTERFACE PRINCIPALE
-  ========================= */
-  #main-page {
-    display: none;
-    padding: 20px;
-    max-width: 1900px; margin: auto;
+     ========================= */
+  #main-page{
+    display:none;
+    padding:20px;
+    max-width:1900px;margin:auto;
   }
-  .header-container {
-    display: flex; align-items: center;
-    margin-bottom: 20px;
+  .header-container{
+    display:flex;align-items:center;margin-bottom:20px;
   }
-  .header-logo { max-height: 60px; margin-right: 10px; }
-  .header-title { font-size: 32px; margin: 0; }
+  .header-logo{max-height:60px;margin-right:10px;}
+  .header-title{font-size:32px;margin:0;color:var(--fg);}
   
-  .section {
-    margin-bottom: 20px;
-    background: #fff;
-    padding: 15px; border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  /* ---- Bouton mode sombre ---- */
+  .theme-toggle{
+    margin-left:auto;
+    background:none;border:none;
+    font-size:24px;line-height:1;
+    cursor:pointer;opacity:.65;
+    transition:opacity .2s;
+    color:var(--fg);
   }
-  label {
-    display: block; margin-bottom: 5px;
-    font-weight: bold;
-  }
-  input[type=text], select {
-    padding: 6px; margin-bottom: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc; border-radius: 4px;
-  }
-  input[type=text] { text-transform: uppercase; }
+  .theme-toggle:hover{opacity:1;}
   
-  /* Sélection client : alignement des boutons à droite */
-  #clientSelection { display: flex; align-items: flex-start; gap: 5px; }
-  .client-info { flex: 1; }
-  .client-buttons {
-    margin-left: auto;
-    display: flex; gap: 5px;
+  /* ---- Sections / cartes ---- */
+  .section{
+    margin-bottom:20px;
+    background:var(--card-bg);
+    padding:15px;border-radius:6px;
+    box-shadow:0 2px 4px var(--shadow);
   }
-  #clearClient {
-    margin-top: 5px; padding: 5px 10px;
-    font-size: 14px; border: none; border-radius: 4px;
-    background: #f44336; color: #fff;
-    cursor: pointer;
+  label{
+    display:block;margin-bottom:5px;font-weight:bold;color:var(--fg);
+  }
+  input[type=text],select{
+    padding:6px;margin-bottom:10px;
+    box-sizing:border-box;
+    border:1px solid var(--border);border-radius:4px;
+    background:var(--card-bg);color:var(--fg);
+  }
+  input[type=text]{text-transform:uppercase;}
+  
+  /* ---- Sélection client ---- */
+  #clientSelection{display:flex;align-items:flex-start;gap:5px;}
+  .client-info{flex:1;}
+  .client-buttons{
+    margin-left:auto;
+    display:flex;gap:5px;
+  }
+  #clearClient{
+    margin-top:5px;padding:5px 10px;font-size:14px;
+    border:none;border-radius:4px;
+    background:var(--danger);color:#fff;cursor:pointer;
   }
   
-  /* Tableau */
-  .table-container { overflow-x: auto; }
-  table {
-    width: 100%; border-collapse: collapse; background: #fff;
+  /* ---- Tableau ---- */
+  .table-container{overflow-x:auto;}
+  table{
+    width:100%;border-collapse:collapse;background:var(--card-bg);
   }
-  th, td {
-    border: 1px solid #ddd; padding: 8px;
-    text-align: left;
+  th,td{
+    border:1px solid var(--border);
+    padding:8px;text-align:left;
+    color:var(--fg);
   }
   
-  /* Par défaut, on masque toutes les colonnes spécifiques */
-  th[class^="col-"], td[class^="col-"] {
-    display: none;
-  }
+  /* Par défaut on masque les colonnes spécifiques */
+  th[class^="col-"],td[class^="col-"]{display:none;}
   
   /* --- Visibilité selon le mode --- */
-  /* Mode Normal */
   body.mode-normal .col-common,
-  body.mode-normal .col-normal {
-    display: table-cell;
-  }
+  body.mode-normal .col-normal{display:table-cell;}
   
-  /* Mode Compagnie */
   body.mode-comp .col-common,
-  body.mode-comp .col-comp {
-    display: table-cell;
-  }
+  body.mode-comp .col-comp{display:table-cell;}
   
-  /* Mode Famille */
   body.mode-family .col-common,
-  body.mode-family .col-family {
-    display: table-cell;
-  }
+  body.mode-family .col-family{display:table-cell;}
   
-  /* Boutons & erreurs */
-  .button-container {
-    display: flex; justify-content: flex-end;
-    align-items: center; margin-top: 10px; gap: 10px;
+  /* ---- Boutons & erreurs ---- */
+  .button-container{
+    display:flex;justify-content:flex-end;align-items:center;
+    margin-top:10px;gap:10px;
   }
-  button {
-    padding: 10px 15px; border: none;
-    border-radius: 4px; background: #4CAF50;
-    color: #fff; cursor: pointer;
+  button{
+    padding:10px 15px;border:none;border-radius:4px;
+    background:var(--accent);color:#fff;cursor:pointer;
   }
-  #addRow { background: blue; }
-  #resetButton { background: #f44336; }
-  .error {
-    border: 2px solid red !important;
-    background: #fdd;
+  #addRow{background:blue;}         /* souhaité explicitement */
+  #resetButton{background:var(--danger);}
+  .error{
+    border:2px solid red !important;
+    background:#fdd;
   }
   
