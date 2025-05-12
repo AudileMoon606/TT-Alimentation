@@ -68,20 +68,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4) Met à jour les options des <select> "emploi"
     function updateEmploiOptions() {
       document.querySelectorAll("select[name$='_emploi']").forEach(sel => {
-        const curr = sel.value;
+        const curr = sel.value;                     // on mémorise la valeur actuelle
         sel.innerHTML = '<option value=""></option>';
+
+        // Ajoute les emplois du client sélectionné
         if (selectedClient) {
           selectedClient.emplois.forEach(v => {
             const opt = document.createElement('option');
-            opt.value = v; opt.textContent = v;
+            opt.value = opt.textContent = v;
             sel.appendChild(opt);
           });
         }
-        if (![...sel.options].some(o => o.value === 'Compagnie')) {
+
+        // Ne proposer “Compagnie” que si c’est pertinent
+        const shouldOfferCompagnie =
+          !selectedClient || selectedClient.emplois.includes('Compagnie');
+
+        if (shouldOfferCompagnie &&
+            ![...sel.options].some(o => o.value === 'Compagnie')) {
           const opt = document.createElement('option');
-          opt.value = 'Compagnie'; opt.textContent = 'Compagnie';
+          opt.value = opt.textContent = 'Compagnie';
           sel.appendChild(opt);
         }
+
+        // Restaure la sélection si possible
         sel.value = curr;
       });
     }
