@@ -9,7 +9,7 @@
     --card-bg     : #ffffff;
     --border      : #b7c3b2;
     --shadow      : rgba(0,0,0,.08);
-    --accent      : #c9a418;   /* boutons principaux */
+    --accent      : #3c4c36;   /* boutons principaux */
     --danger      : #d32f2f;   /* boutons d’effacement */
   }
   body.dark-mode{
