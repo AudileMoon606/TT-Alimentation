@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   
       const csv = headers.join(';') + '\n' + content;
-      const blob=new Blob(["\uFEFF"+csvContent],{type:"text/csv;charset=windows-1252;"});
+      const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=windows-1252;"});
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
       const safe = selectedClient
