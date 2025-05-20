@@ -303,8 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = {};
         ['ref','firme','matricule','nom','prenom','nom1','nom2','prenom1','prenom2','sexe','annee','mois','jour','lien_familial','emploi','adresse','app','code_postal','numero_permis','notes']
           .forEach(key => {
-            const el = document.getElementsByName(`row${i}_${key}`)[0];
-            r[key]   = el ? el.value.trim() : '';
+            const fields      = document.getElementsByName(`row${i}_${key}`);
+            const activeField = [...fields].find(f => !f.disabled && f.offsetParent !== null) || fields[0];
+            r[key]            = activeField ? activeField.value.trim() : '';
           });
   
         // Ignore ligne vide
@@ -312,8 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
         // Validation selon mode
         const markErr = name => {
-          const el = document.getElementsByName(`row${i}_${name}`)[0];
-          if (el) el.classList.add('error');
+          const fields      = document.getElementsByName(`row${i}_${name}`);
+          const activeField = [...fields].find(f => !f.disabled && f.offsetParent !== null) || fields[0];
+          if (activeField) activeField.classList.add('error');
           valid = false;
         };
         
