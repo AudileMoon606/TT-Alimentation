@@ -1,7 +1,7 @@
 // script.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Thème sombre : récupération, bascule et persistance localStorage *
+    // Thème sombre : récupération, bascule et persistance localStorage *
     const savedTheme = localStorage.getItem('darkMode') === 'true';
     if (savedTheme) document.body.classList.add('dark-mode');
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1) Variables globales
     let clients = {}, selectedClient = null, defaultRowCount = 10;
   
-    // 2) Met à jour le mode d’affichage (normal, compagnie, famille)
+    // 2) Met à jour le mode d'affichage (normal, compagnie, famille)
     function updateMode() {
       const body = document.body;
       body.classList.remove('mode-normal', 'mode-comp', 'mode-family');
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
 
-        // Ne proposer “Compagnie” que si c’est pertinent
+        // Ne proposer "Compagnie" que si c'est pertinent
         const shouldOfferCompagnie =
           !selectedClient || selectedClient.emplois.includes('Compagnie');
 
@@ -117,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="col-common"><input type="text" name="row${i}_ref"></td>
           <td class="col-comp"><input type="text" name="row${i}_firme"></td>
           <td class="col-comp"><input type="text" name="row${i}_matricule"></td>
+          <td class="col-comp"><input type="text" name="row${i}_nom"></td>
+          <td class="col-comp"><input type="text" name="row${i}_prenom"></td>
           <td class="col-normal"><input type="text" name="row${i}_nom"></td>
           <td class="col-normal"><input type="text" name="row${i}_prenom"></td>
           <td class="col-family"><input type="text" name="row${i}_nom1"></td>
@@ -129,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <option value="F">F</option><option value="X">X</option>
             </select>
           </td>
-          <td class="col-common"><input type="text" name="row${i}_annee" placeholder="YYYY" style="width:60px;"></td>
+          <td class="col-common"><input type="text" name="row${i}_annee" placeholder="YYYY" style="width:60px;" maxlength="4"></td>
           <td class="col-common"><select name="row${i}_mois">${moisOptions}</select></td>
           <td class="col-common"><select name="row${i}_jour">${mkJourOptions()}</select></td>
           <td class="col-family">
@@ -314,30 +316,54 @@ document.addEventListener('DOMContentLoaded', () => {
           if (el) el.classList.add('error');
           valid = false;
         };
-        if (modeComp) {
-          if (!r.firme) markErr('firme');
-        } else if (modeFamily) {
+        
+        // Validation selon le mode avec les champs obligatoires spécifiés
+        if (modeFamily) {
+          // Mode famille: ['NOM1','PRENOM1','SEXE','DDN','LIEN_FAMILIAL','EMPLOI']
           if (!r.nom1)          markErr('nom1');
           if (!r.prenom1)       markErr('prenom1');
+          if (!r.sexe)          markErr('sexe');
+          if (!r.annee)         markErr('annee');
+          if (!r.mois)          markErr('mois');
+          if (!r.jour)          markErr('jour');
           if (!r.lien_familial) markErr('lien_familial');
+          if (!r.emploi)        markErr('emploi');
+        } else if (modeComp) {
+          // Mode compagnie avec distinction selon l'emploi
+          if (r.emploi === 'Compagnie') {
+            // Pour emploi "Compagnie": ['FIRME','EMPLOI']
+            if (!r.firme)     markErr('firme');
+            if (!r.emploi)    markErr('emploi');
+          } else {
+            // Pour autres emplois: ['NOM','PRENOM','SEXE','DDN','EMPLOI']
+            if (!r.nom)       markErr('nom');
+            if (!r.prenom)    markErr('prenom');
+            if (!r.sexe)      markErr('sexe');
+            if (!r.annee)     markErr('annee');
+            if (!r.mois)      markErr('mois');
+            if (!r.jour)      markErr('jour');
+            if (!r.emploi)    markErr('emploi');
+          }
         } else {
-          if (!r.nom)    markErr('nom');
-          if (!r.prenom) markErr('prenom');
+          // Mode normal: ['NOM','PRENOM','SEXE','DDN','EMPLOI']
+          if (!r.nom)       markErr('nom');
+          if (!r.prenom)    markErr('prenom');
+          if (!r.sexe)      markErr('sexe');
+          if (!r.annee)     markErr('annee');
+          if (!r.mois)      markErr('mois');
+          if (!r.jour)      markErr('jour');
+          if (!r.emploi)    markErr('emploi');
         }
-        if (!r.sexe)       markErr('sexe');
-        if (!r.annee)      markErr('annee');
-        if (!r.mois)       markErr('mois');
-        if (!r.jour)       markErr('jour');
-        if (!r.emploi)     markErr('emploi');
-        if (!valid)        continue;
+        
+        if (!valid) continue;
   
         // Format code postal
         let cp = r.code_postal.replace(/\s+/g,'');
         if (cp.length === 6) cp = cp.slice(0,3) + ' ' + cp.slice(3);
         r.code_postal = cp.length === 7 ? cp : '';
   
-        // Calcul DDN & âge si pas Compagnie
-        if (!modeComp) {
+        // Calcul DDN & âge si pas Compagnie ou si c'est en mode Compagnie mais pas avec l'emploi "Compagnie"
+        if (!(modeComp && r.emploi === 'Compagnie')) {
           const moNbr     = parseInt(r.mois.substr(0,2));
           r.ddn           = `${r.annee}-${pad(moNbr)}-${r.jour}`;
           const birth     = new Date(r.annee, moNbr-1, parseInt(r.jour));
@@ -347,9 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
           if (mDelta < 0 || (mDelta === 0 && today.getDate() < birth.getDate())) age--;
           if (age < 16 || age > 100) {
             ['annee','mois','jour'].forEach(markErr);
-            alert('Erreur : l’âge doit être entre 16 et 100 ans.');
+            alert("Erreur : l'âge doit être entre 16 et 100 ans.");
             return;
           }
+        } else {
+          // Pour les compagnies, on n'a pas de DDN
+          r.ddn = '';
         }
   
         rows.push(r);
@@ -395,4 +424,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   
   });
-  
