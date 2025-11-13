@@ -218,6 +218,57 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   
+    // 7b) Gestion de la saisie des jours dans les <select>
+    let jourBuffer = '';
+    let jourTimeout = null;
+    
+    document.addEventListener('keydown', e => {
+      const target = e.target;
+      if (target.tagName === 'SELECT' && target.name && target.name.endsWith('_jour')) {
+        const key = e.key;
+        
+        // Si c'est un chiffre (0-9)
+        if (/^[0-9]$/.test(key)) {
+          e.preventDefault(); // Empêche le comportement par défaut du select
+          
+          // Ajoute le chiffre au buffer
+          jourBuffer += key;
+          
+          // Annule le timeout précédent
+          if (jourTimeout) clearTimeout(jourTimeout);
+          
+          // Si on a 2 chiffres ou si le premier chiffre est >= 4, on sélectionne
+          if (jourBuffer.length === 2 || parseInt(jourBuffer, 10) >= 4) {
+            const day = Math.min(parseInt(jourBuffer, 10), 31);
+            const paddedDay = String(day).padStart(2, '0');
+            target.value = paddedDay;
+            jourBuffer = '';
+          } else {
+            // Sinon, on attend 800ms pour voir si un autre chiffre arrive
+            jourTimeout = setTimeout(() => {
+              const day = parseInt(jourBuffer, 10);
+              if (day >= 1 && day <= 31) {
+                const paddedDay = String(day).padStart(2, '0');
+                target.value = paddedDay;
+              }
+              jourBuffer = '';
+            }, 800);
+          }
+        } else if (key === 'Backspace' || key === 'Delete') {
+          // Permet d'effacer
+          jourBuffer = '';
+          if (jourTimeout) clearTimeout(jourTimeout);
+        } else if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Enter' || key === 'Tab') {
+          // Permet la navigation normale avec les flèches, Enter et Tab
+          jourBuffer = '';
+          if (jourTimeout) clearTimeout(jourTimeout);
+        } else if (!/^Arrow|Enter|Tab|Escape/.test(key)) {
+          // Bloque les autres lettres
+          e.preventDefault();
+        }
+      }
+    });
+  
     // 8) Supprime les erreurs visuelles
     function clearErrors() {
       document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
