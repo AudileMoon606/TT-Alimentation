@@ -14,21 +14,41 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     // 1) Variables globales
-    let clients = {}, selectedClient = null, defaultRowCount = 10;
+    let clients = {}, selectedClient = null, defaultRowCount = 10, forcedMode = null;
   
     // 2) Met à jour le mode d'affichage (normal, compagnie, famille)
     function updateMode() {
       const body = document.body;
+      const toggleBtn = document.getElementById('toggleMode');
       body.classList.remove('mode-normal', 'mode-comp', 'mode-family');
+      
       if (selectedClient) {
-        if (selectedClient.emplois.some(e => e === 'Famille' || e === 'Famille Ext Canada')) {
-          body.classList.add('mode-family');
-        } else if (selectedClient.emplois.includes('Compagnie')) {
-          body.classList.add('mode-comp');
+        const hasFamily = selectedClient.emplois.some(e => e === 'Famille' || e === 'Famille Ext Canada');
+        const hasCompany = selectedClient.emplois.includes('Compagnie');
+        
+        // Show toggle button only if client has both COMPAGNIE and FAMILLE
+        if (hasFamily && hasCompany) {
+          toggleBtn.style.display = 'inline-block';
+          // Use forced mode if set, otherwise default to family
+          if (forcedMode === 'comp') {
+            body.classList.add('mode-comp');
+            toggleBtn.textContent = 'Basculer vers Famille';
+          } else {
+            body.classList.add('mode-family');
+            toggleBtn.textContent = 'Basculer vers Compagnie';
+          }
         } else {
-          body.classList.add('mode-normal');
+          toggleBtn.style.display = 'none';
+          if (hasFamily) {
+            body.classList.add('mode-family');
+          } else if (hasCompany) {
+            body.classList.add('mode-comp');
+          } else {
+            body.classList.add('mode-normal');
+          }
         }
       } else {
+        toggleBtn.style.display = 'none';
         body.classList.add('mode-normal');
       }
     }
@@ -303,17 +323,32 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('clientInput').addEventListener('change', e => {
       const num = e.target.value.split(' - ')[0].trim();
       selectedClient = clients[num] || null;
+      forcedMode = null;
       updateEmploiOptions();
       updateMode();
     });
     document.getElementById('clearClient').addEventListener('click', () => {
         document.getElementById('clientInput').value = '';
         selectedClient = null;
+        forcedMode = null;
         updateEmploiOptions();
         updateMode();
         // on vide tout le tableau
         document.querySelector('#defaultTableContainer tbody').innerHTML = '';
       });
+    
+    // 10b) Toggle mode button
+    document.getElementById('toggleMode').addEventListener('click', () => {
+      if (selectedClient) {
+        const body = document.body;
+        if (body.classList.contains('mode-family')) {
+          forcedMode = 'comp';
+        } else {
+          forcedMode = 'family';
+        }
+        updateMode();
+      }
+    });
       
   
     // 11) Ajouter une ligne
@@ -448,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
           r.ref,r.nom1,r.nom2,r.prenom1,r.prenom2,r.sexe,r.ddn,r.lien_familial,r.emploi,r.adresse,r.app,r.code_postal,r.numero_permis,r.notes
         ].join(';')).join('\n');
       } else if (modeComp) {
-        headers = ['NUMERO_REFERENCE','FIRME','MATRICULE','NOM','PRENOM','SEXE','DDN','EMPLOI','ADRESSE','APP','CODE_POSTAL','NUMERO_PERMIS','NOTES'];
+        headers = ['NUMERO_REFERENCE','FIRME','MATRICULE_FIRME','NOM','PRENOM','SEXE','DDN','EMPLOI','ADRESSE','APP','CODE_POSTAL','NUMERO_PERMIS','NOTES'];
         content = rows.map(r => [
           r.ref,r.firme,r.matricule,r.nom,r.prenom,r.sexe,r.ddn,r.emploi,r.adresse,r.app,r.code_postal,r.numero_permis,r.notes
         ].join(';')).join('\n');
