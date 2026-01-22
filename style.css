@@ -4,153 +4,344 @@
    PALETTE via variables CSS
    ========================= */
    :root{
-    --bg          : #f0f3ef;
-    --fg          : #263626;
+    --bg          : #f4f6f3;
+    --fg          : #1a2e1a;
     --card-bg     : #ffffff;
-    --border      : #b7c3b2;
-    --shadow      : rgba(0,0,0,.08);
-    --accent      : #3c4c36;   /* boutons principaux */
-    --danger      : #d32f2f;   /* boutons d’effacement */
+    --border      : #d4ddd0;
+    --shadow      : rgba(0,0,0,.06);
+    --accent      : #2d6a4f;
+    --accent-hover: #1b4332;
+    --danger      : #c1121f;
+    --danger-hover: #9b0d16;
+    --radius      : 10px;
+    --transition  : 0.2s ease;
   }
   body.dark-mode{
-    --bg          : #1d2a20;
-    --fg          : #f2f2f2;
-    --card-bg     : #263626;
-    --border      : #3c4c36;
-    --shadow      : rgba(0,0,0,.65);
-    --accent      : #c9a418;
-    --danger      : #d32f2f;
+    --bg          : #121a14;
+    --fg          : #eef2ec;
+    --card-bg     : #1e2a20;
+    --border      : #3a4a3c;
+    --shadow      : rgba(0,0,0,.45);
+    --accent      : #52b788;
+    --accent-hover: #40916c;
+    --danger      : #e63946;
+    --danger-hover: #c1121f;
   }
   
   /* =========================
-     STYLES GLOBAUX / LOGIN
-     ========================= */
-  body{
-    font-family:Arial,sans-serif;
-    margin:0;padding:0;
-    background:var(--bg);
-    color:var(--fg);
-  }
-  
-  /* ---- Page de connexion ---- */
-  #login-page{
-    position:fixed;top:0;left:0;right:0;bottom:0;
-    background:var(--card-bg);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    z-index:1000;opacity:1;transition:opacity 1s ease;
-  }
-  #login-page.fade-out{opacity:0;}
-  #login-page .login-container{
-    text-align:center;border:1px solid var(--border);
-    padding:30px;border-radius:8px;
-    box-shadow:0 2px 6px var(--shadow);
-    background:var(--card-bg);
-  }
-  #login-page img{max-height:80px;margin-bottom:20px;}
-  #login-page input[type=password]{
-    padding:10px;font-size:16px;width:250px;
-    border:1px solid var(--border);border-radius:4px;
-    margin-bottom:20px;background:var(--card-bg);color:var(--fg);
-  }
-  #login-page button{
-    padding:10px 20px;font-size:16px;
-    border:none;border-radius:4px;
-    background:var(--accent);color:#fff;cursor:pointer;
-  }
+   STYLES GLOBAUX / LOGIN
+   ========================= */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ---- Page de connexion ---- */
+#login-page {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--card-bg) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+#login-page.fade-out { opacity: 0; }
+#login-page .login-container {
+  text-align: center;
+  border: 1px solid var(--border);
+  padding: 40px 50px;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px var(--shadow);
+  background: var(--card-bg);
+  backdrop-filter: blur(4px);
+}
+#login-page img {
+  max-height: 90px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+}
+#login-page input[type=password] {
+  padding: 12px 16px;
+  font-size: 16px;
+  width: 280px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  color: var(--fg);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+#login-page input[type=password]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+}
+#login-page button {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+#login-page button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
   
   /* =========================
-     INTERFACE PRINCIPALE
-     ========================= */
-  #main-page{
-    display:none;
-    padding:20px;
-    max-width:1900px;margin:auto;
-  }
-  .header-container{
-    display:flex;align-items:center;margin-bottom:20px;
-  }
-  .header-logo{max-height:60px;margin-right:10px;}
-  .header-title{font-size:32px;margin:0;color:var(--fg);}
-  
-  /* ---- Bouton mode sombre ---- */
-  .theme-toggle{
-    margin-left:auto;
-    background:none;border:none;
-    font-size:24px;line-height:1;
-    cursor:pointer;opacity:.65;
-    transition:opacity .2s;
-    color:var(--fg);
-  }
-  .theme-toggle:hover{opacity:1;}
+   INTERFACE PRINCIPALE
+   ========================= */
+#main-page {
+  display: none;
+  padding: 24px;
+  max-width: 1920px;
+  margin: auto;
+  animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.header-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.header-logo {
+  max-height: 56px;
+  margin-right: 16px;
+  border-radius: 8px;
+}
+.header-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--fg);
+  letter-spacing: -0.5px;
+}
+
+/* ---- Bouton mode sombre ---- */
+.theme-toggle {
+  margin-left: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all var(--transition);
+  color: var(--fg);
+}
+.theme-toggle:hover {
+  opacity: 1;
+  transform: rotate(15deg);
+  box-shadow: 0 4px 12px var(--shadow);
+}
   
   /* ---- Sections / cartes ---- */
-  .section{
-    margin-bottom:20px;
-    background:var(--card-bg);
-    padding:15px;border-radius:6px;
-    box-shadow:0 2px 4px var(--shadow);
-  }
-  label{
-    display:block;margin-bottom:5px;font-weight:bold;color:var(--fg);
-  }
-  input[type=text],select{
-    padding:6px;margin-bottom:10px;
-    box-sizing:border-box;
-    border:1px solid var(--border);border-radius:4px;
-    background:var(--card-bg);color:var(--fg);
-  }
-  input[type=text]{text-transform:uppercase;}
-  
-  /* ---- Sélection client ---- */
-  #clientSelection{display:flex;align-items:flex-start;gap:5px;}
-  .client-info{flex:1;}
-  .client-buttons{
-    margin-left:auto;
-    display:flex;gap:5px;
-  }
-  #clearClient{
-    margin-top:5px;padding:5px 10px;font-size:14px;
-    border:none;border-radius:4px;
-    background:var(--danger);color:#fff;cursor:pointer;
-  }
+.section {
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px var(--shadow);
+  border: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition);
+}
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--fg);
+}
+input[type=text], select {
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--fg);
+  font-size: 14px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+input[type=text]:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+input[type=text] { text-transform: uppercase; }
+
+/* ---- Sélection client ---- */
+#clientSelection {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.client-info { flex: 1; min-width: 300px; }
+.client-info input[type=text] {
+  width: 100%;
+  max-width: 400px;
+}
+.client-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#clearClient {
+  margin-top: 5px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  background: var(--danger);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+#clearClient:hover {
+  background: var(--danger-hover);
+}
   
   /* ---- Tableau ---- */
-  .table-container{overflow-x:auto;}
-  table{
-    width:100%;border-collapse:collapse;background:var(--card-bg);
-  }
-  th,td{
-    border:1px solid var(--border);
-    padding:8px;text-align:left;
-    color:var(--fg);
-  }
-  
-  /* Par défaut on masque les colonnes spécifiques */
-  th[class^="col-"],td[class^="col-"]{display:none;}
-  
-  /* --- Visibilité selon le mode --- */
-  body.mode-normal .col-common,
-  body.mode-normal .col-normal{display:table-cell;}
-  
-  body.mode-comp .col-common,
-  body.mode-comp .col-comp{display:table-cell;}
-  
-  body.mode-family .col-common,
-  body.mode-family .col-family{display:table-cell;}
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--fg);
+  font-size: 14px;
+}
+th {
+  background: var(--bg);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+}
+tbody tr {
+  transition: background var(--transition);
+}
+tbody tr:hover {
+  background: rgba(45, 106, 79, 0.04);
+}
+body.dark-mode tbody tr:hover {
+  background: rgba(82, 183, 136, 0.08);
+}
+
+/* ---- Colonne numéro de ligne ---- */
+.col-rownum {
+  width: 40px;
+  text-align: center !important;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--bg) !important;
+}
+td.col-rownum {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Par défaut on masque les colonnes spécifiques */
+th[class^="col-"], td[class^="col-"] { display: none; }
+
+/* ---- Colonne row number toujours visible ---- */
+.col-rownum { display: table-cell !important; }
+
+/* --- Visibilité selon le mode --- */
+body.mode-normal .col-common,
+body.mode-normal .col-normal { display: table-cell; }
+
+body.mode-comp .col-common,
+body.mode-comp .col-comp { display: table-cell; }
+
+body.mode-family .col-common,
+body.mode-family .col-family { display: table-cell; }
   
   /* ---- Boutons & erreurs ---- */
-  .button-container{
-    display:flex;justify-content:flex-end;align-items:center;
-    margin-top:10px;gap:10px;
-  }
-  button{
-    padding:10px 15px;border:none;border-radius:4px;
-    background:var(--accent);color:#fff;cursor:pointer;
-  }
-  #addRow{background:blue;}         /* souhaité explicitement */
-  #resetButton{background:var(--danger);}
-  .error{
-    border:2px solid red !important;
-    background:#fdd;
-  }
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+button:active {
+  transform: translateY(0);
+}
+#addRow {
+  background: #2563eb;
+}
+#addRow:hover {
+  background: #1d4ed8;
+}
+#resetButton {
+  background: var(--danger);
+}
+#resetButton:hover {
+  background: var(--danger-hover);
+}
+#saveButton {
+  background: var(--accent);
+  padding: 10px 24px;
+}
+.error {
+  border: 2px solid #dc2626 !important;
+  background: rgba(220, 38, 38, 0.08) !important;
+  animation: shake 0.4s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
   

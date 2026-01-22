@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function defaultRow(i) {
       return `
         <tr>
+          <td class="col-rownum">${i + 1}</td>
           <td class="col-common"><input type="text" name="row${i}_ref"></td>
           <td class="col-comp"><input type="text" name="row${i}_firme"></td>
           <td class="col-comp"><input type="text" name="row${i}_matricule"></td>
