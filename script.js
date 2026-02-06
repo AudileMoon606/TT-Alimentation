@@ -352,11 +352,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
       
   
-    // 11) Ajouter une ligne
+    // 11) Ajouter 5 lignes
     document.getElementById('addRow').addEventListener('click', () => {
       const tb = document.querySelector('#defaultTableContainer tbody');
-      const i  = tb.rows.length;
-      tb.insertAdjacentHTML('beforeend', defaultRow(i));
+      for (let j = 0; j < 5; j++) {
+        const i = tb.rows.length;
+        tb.insertAdjacentHTML('beforeend', defaultRow(i));
+      }
       updateEmploiOptions();
     });
   
