@@ -1310,3 +1310,6 @@ Client;Secteur;Nom client;Bur Faillite;CIDREQ;D.A.D.;DAD 9ans;DBQ2;DBQ 9;Div. in
 1709;Scolaire;RPA - Villa St-Narcisse;;;;;Santé!#!Bénévole;;;Santé!#!Bénévole;;;;Santé!#!Bénévole;;Santé!#!Bénévole;;;;;Santé!#!Bénévole;Santé!#!Bénévole;;;;;;;;;;;;
 1401;Scolaire;RPA - Village Harmonie (Société en commandite);;;;;Santé!#!Bénévole;;;Santé!#!Bénévole;;;;Santé!#!Bénévole;;Santé!#!Bénévole;;;;;Santé!#!Bénévole;Santé!#!Bénévole;;;;;;;;;;;;
 1489;Scolaire;RPA - Yves Bérubé inc. (Hôtel Victoria);;;;;Santé!#!Bénévole;;;Santé!#!Bénévole;;;;Santé!#!Bénévole;;Santé!#!Bénévole;;;;;Santé!#!Bénévole;Santé!#!Bénévole;;;;;;;;;;;;
+2472;DSGI;CAG - Employés du CAG avec accès SQ;Accréditation Niveau 3;Famille;Famille Ext Canada;
+2473;DSGI;CAG - Entreprises et employés de prestataire avec accès SQ;Accréditation Niveau 3;Famille;Famille Ext Canada;Compagnie;Administrateur;
+2474;DSGI;CAG - Entreprises et employés de prestataire sans accès SQ;Accréditation Niveau 3;Famille;Famille Ext Canada;Compagnie;Administrateur;
