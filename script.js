@@ -462,9 +462,9 @@ document.addEventListener('DOMContentLoaded', () => {
           let age         = today.getFullYear() - birth.getFullYear();
           const mDelta    = today.getMonth() - birth.getMonth();
           if (mDelta < 0 || (mDelta === 0 && today.getDate() < birth.getDate())) age--;
-          if (age < 16 || age > 100) {
+          if (age < 16 || age > 130) {
             ['annee','mois','jour'].forEach(markErr);
-            alert("Erreur : l'âge doit être entre 16 et 100 ans.");
+            alert("Erreur : l'âge doit être entre 16 et 130 ans.");
             return;
           }
         } else {
